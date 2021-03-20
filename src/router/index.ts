@@ -3,6 +3,7 @@ import User from "../components/User.vue";
 import Loans from "../components/Loans.vue";
 import Ships from "../components/Ships.vue";
 import Marketplace from "../components/Marketplace.vue";
+import Map from "../components/Map.vue";
 import Login from "../components/Login.vue";
 import Signup from "../components/Signup.vue";
 
@@ -36,6 +37,11 @@ const routes = [
     path: "/market",
     name: "Marketplace",
     component: Marketplace
+  },
+  {
+    path: "/map",
+    name: "Map",
+    component: Map
   }
 ];
 

@@ -6,6 +6,7 @@
       <router-link to="/loans">Loans</router-link>
       <router-link to="/ships">Ships</router-link>
       <router-link to="/market">Marketplace</router-link>
+      <router-link to="/map">Map</router-link>
       <router-link @click="handleLogout" to="/Login">Log Out</router-link>
     </nav>
   </div>

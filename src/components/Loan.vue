@@ -3,7 +3,7 @@
     <item-card
       :content="[
         { name: 'Amount:', value: Number(loan.amount).toLocaleString() },
-        { name: 'Collaral Required:', value: loan.collateralRequired },
+        { name: 'Collateral Required:', value: loan.collateralRequired },
         { name: 'Rate:', value: loan.rate + '%' },
         { name: 'Term in Days:', value: loan.termInDays },
         { name: 'Type:', value: loan.type }

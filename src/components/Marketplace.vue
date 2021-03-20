@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { fetchUserShips } from "../api";
+import { fetchUserShips, getMarketplace } from "../api";
 import ItemCard from "./ItemCard.vue";
 
 interface PurchaseLocations {
@@ -50,25 +50,16 @@ export default defineComponent({
     const ships = ref([]);
     const selectedShip = ref({} as Ship);
     const marketplace = ref([]);
-    const getMarketplace = async () => {
-      return await fetch(
-        `https://api.spacetraders.io/game/locations/${selectedShip.value.location}/marketplace`,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.VUE_APP_TOKEN}`
-          }
-        }
-      ).then(res => res.json());
-    };
+
     onMounted(() => {
       fetchUserShips().then(data => {
         ships.value = data.ships;
         selectedShip.value = data.ships[0];
         console.log(data.ships[0]);
 
-        getMarketplace().then(data => {
+        getMarketplace(selectedShip.value.location).then(data => {
           if (data.error) {
-            //error handling
+            //TODO: error handling
           } else {
             marketplace.value = data.planet.marketplace;
           }

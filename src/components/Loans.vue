@@ -7,6 +7,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
+import { getLoans, takeOutLoan } from "../api";
 import Error from "./Error.vue";
 import Loan from "./Loan.vue";
 
@@ -22,12 +23,6 @@ interface Loan {
 export default defineComponent({
   components: { Loan, Error },
   setup() {
-    const getLoans = async () => {
-      const response = await fetch(
-        `https://api.spacetraders.io/game/loans?token=${process.env.VUE_APP_TOKEN}`
-      );
-      return response.json();
-    };
     const loans = ref([]);
     const isLoaded = ref(false);
 
@@ -35,18 +30,6 @@ export default defineComponent({
     const errorMessage = ref("");
     const closeError = () => {
       hasError.value = false;
-    };
-
-    const takeOutLoan = async (loanType: string) => {
-      return fetch(`https://api.spacetraders.io/users/gilli/loans`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json, text/plain, */*",
-          Authorization: `Bearer ${process.env.VUE_APP_TOKEN}`,
-          "Content-Type": "application/json;charset=UTF-8"
-        },
-        body: JSON.stringify({ type: loanType })
-      }).then(response => response.json());
     };
 
     onMounted(() => {
@@ -72,6 +55,7 @@ export default defineComponent({
         isLoaded.value = true;
       });
     });
+
     return {
       loans,
       isLoaded,

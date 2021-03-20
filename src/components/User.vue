@@ -43,6 +43,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
+import { getUser } from "../api";
 import ItemCard from "./ItemCard.vue";
 
 export default defineComponent({
@@ -50,17 +51,12 @@ export default defineComponent({
   setup() {
     const thisuser = ref({});
     const isLoaded = ref(false);
-    const getUser = async (username: string) => {
-      const res = await fetch(
-        `https://api.spacetraders.io/users/${username}?token=${process.env.VUE_APP_TOKEN}`
-      );
-      const userData = await res.json();
-
-      thisuser.value = userData.user;
-    };
 
     onMounted(() => {
-      getUser("gilli").then(() => (isLoaded.value = true));
+      getUser("gilli").then(data => {
+        thisuser.value = data.user;
+        isLoaded.value = true;
+      });
     });
 
     return {

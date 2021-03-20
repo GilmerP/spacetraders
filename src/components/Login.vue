@@ -15,7 +15,8 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { login } from "../Auth";
+import useUser from "../Auth";
+const { login } = useUser();
 
 const name = ref("");
 const token = ref("");

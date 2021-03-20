@@ -1,13 +1,12 @@
 import { createApp } from "vue";
-import { getAuthentication } from "./Auth";
+import useUser from "./Auth";
 import App from "./App.vue";
 import router from "./router/index";
 
 router.beforeEach((to, from, next) => {
-  if (to.name !== "Login" && to.name !== "Signup" && !getAuthentication())
+  const { user } = useUser();
+  if (to.name !== "Login" && to.name !== "Signup" && !user.value)
     next({ name: "Login" });
-  // else if ((to.name == "Login" || to.name == "Signup") && getAuthentication) {
-  //   next({ name: "Home" });
   else next();
 });
 

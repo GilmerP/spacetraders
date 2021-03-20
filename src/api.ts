@@ -1,10 +1,13 @@
-import { user, token } from "./Auth";
+import useUser from "./Auth";
 import { IShip } from "./interfaces";
 const connectionString = "https://api.spacetraders.io";
 
+const { user, token, getUserInfo } = useUser();
+
 const getCurrentUser = async () => {
+  getUserInfo();
   const res = await fetch(
-    `https://api.spacetraders.io/users/${user}?token=${token}`
+    `https://api.spacetraders.io/users/${user.value}?token=${token.value}`
   );
   return await res.json();
 };
@@ -12,7 +15,7 @@ const getCurrentUser = async () => {
 const fetchShips = async () => {
   const data = await fetch(`${connectionString}/game/ships`, {
     headers: {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token.value}`
     }
   })
     .then(res => res.json())
@@ -22,25 +25,28 @@ const fetchShips = async () => {
 
 const buyShip = async (ship: IShip) => {
   if (ship) {
-    return await fetch(`https://api.spacetraders.io/users/gilli/ships`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json, text/plain, */*",
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json;charset=UTF-8"
-      },
-      body: JSON.stringify({
-        location: ship.purchaseLocations[0].location,
-        type: ship.type
-      })
-    }).then(res => res.json());
+    return await fetch(
+      `https://api.spacetraders.io/users/${user.value}/ships`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          Authorization: `Bearer ${token.value}`,
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        body: JSON.stringify({
+          location: ship.purchaseLocations[0].location,
+          type: ship.type
+        })
+      }
+    ).then(res => res.json());
   }
 };
 
 const fetchUserShips = async () => {
-  const data = await fetch(`${connectionString}/users/${user}/ships`, {
+  const data = await fetch(`${connectionString}/users/${user.value}/ships`, {
     headers: {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token.value}`
     }
   })
     .then(res => res.json())
@@ -53,23 +59,25 @@ const getMarketplace = async (location: string) => {
     `${connectionString}/game/locations/${location}/marketplace`,
     {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token.value}`
       }
     }
   ).then(res => res.json());
 };
 
 const getLoans = async () => {
-  const response = await fetch(`${connectionString}/game/loans?token=${token}`);
+  const response = await fetch(
+    `${connectionString}/game/loans?token=${token.value}`
+  );
   return response.json();
 };
 
 const takeOutLoan = async (loanType: string) => {
-  return fetch(`${connectionString}/users/${user}/loans`, {
+  return fetch(`${connectionString}/users/${user.value}/loans`, {
     method: "POST",
     headers: {
       Accept: "application/json, text/plain, */*",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token.value}`,
       "Content-Type": "application/json;charset=UTF-8"
     },
     body: JSON.stringify({ type: loanType })

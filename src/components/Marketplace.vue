@@ -55,13 +55,11 @@ export default defineComponent({
       fetchUserShips().then(data => {
         ships.value = data.ships;
         selectedShip.value = data.ships[0];
-        console.log(data.ships[0]);
-
         getMarketplace(selectedShip.value.location).then(data => {
           if (data.error) {
             //TODO: error handling
           } else {
-            marketplace.value = data.planet.marketplace;
+            marketplace.value = data.location.marketplace;
           }
         });
       });

@@ -4,21 +4,32 @@
       <label for="username">username:</label>
       <input type="text" name="username" id="username" v-model="username" />
       <button @click="handleSignup">Sign Up</button>
+      <span
+        >Already have an Account?
+        <router-link to="/Login">Log in</router-link>
+      </span>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import router from "@/router";
 import { defineComponent, ref } from "vue";
-import { signup } from "../Auth";
+import { createNewUser } from "../api";
+import useUser from "../Auth";
 
 export default defineComponent({
   setup() {
+    const { user, token } = useUser();
     const username = ref("");
+
     const handleSignup = () => {
       console.log("signup");
-
-      signup(username.value);
+      createNewUser(username.value).then(data => {
+        user.value = username.value;
+        token.value = data.token;
+        router.push("/");
+      });
     };
 
     return { username, handleSignup };

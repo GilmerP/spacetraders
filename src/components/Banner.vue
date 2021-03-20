@@ -1,21 +1,22 @@
 <template>
   <div>
     <h1>Space Traders</h1>
-    <div v-if="user" class="nav">
+    <nav v-if="user" class="nav">
       <router-link to="/">User</router-link>
       <router-link to="/loans">Loans</router-link>
       <router-link to="/ships">Ships</router-link>
       <router-link to="/market">Marketplace</router-link>
       <router-link @click="handleLogout" to="/Login">Log Out</router-link>
-    </div>
+    </nav>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { getUserInfo, user, logout } from "../Auth";
+import useUser from "../Auth";
 export default defineComponent({
   setup() {
+    const { logout, getUserInfo, user } = useUser();
     const handleLogout = () => {
       logout();
     };
@@ -26,7 +27,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-div:not(.nav) {
+div {
   width: 100%;
   background: black;
   display: flex;
@@ -35,9 +36,24 @@ div:not(.nav) {
 h1 {
   color: white;
   padding: 10px;
+  flex-grow: 0;
 }
-.nav a {
+nav {
+  flex-grow: 1;
+  margin-right: 30px;
+  display: flex;
+  align-items: center;
+}
+nav a {
   text-decoration: none;
   margin-left: 10px;
+}
+a:nth-last-child(2) {
+  flex-grow: 1;
+}
+a:last-child {
+  background: red;
+  padding: 5px;
+  border-radius: 5px;
 }
 </style>

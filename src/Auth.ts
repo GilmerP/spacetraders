@@ -1,44 +1,34 @@
-import router from "./router/index";
-import { createNewUser } from "./api";
+import { ref, watch } from "vue";
 
-let user: string | null = "";
-let token: string | null = "";
+export default function useUser() {
+  const user = ref(localStorage.getItem("username") as string);
+  const token = ref(localStorage.getItem("token") as string);
 
-const getUserInfo = () => {
-  user = localStorage.getItem("username");
-  token = localStorage.getItem("token");
-};
+  watch(user, user => localStorage.setItem("username", user));
+  watch(token, token => localStorage.setItem("token", token));
 
-const getAuthentication = () => {
-  getUserInfo();
-  if (user && token) return true;
-  return false;
-};
+  const getUserInfo = () => {
+    user.value = localStorage.getItem("username") as string;
+    token.value = localStorage.getItem("token") as string;
+  };
 
-const login = (username: string, usertoken: string) => {
-  localStorage.setItem("username", username);
-  localStorage.setItem("token", usertoken);
-  getUserInfo();
-  router.push({ name: "Home" });
-};
+  const getAuthentication = () => {
+    if (user.value && token.value) return true;
+    return false;
+  };
 
-const logout = () => {
-  localStorage.removeItem("username");
-  localStorage.removeItem("token");
-  user = "";
-  token = "";
-};
+  const login = (username: string, usertoken: string) => {
+    localStorage.setItem("username", username);
+    localStorage.setItem("token", usertoken);
+    getUserInfo();
+  };
 
-const signup = (username: string) => {
-  createNewUser(username).then(data => {
-    if (data.error) {
-      console.log(data.error);
-    } else {
-      user = username;
-      token = data.token as string;
-      login(user, token);
-    }
-  });
-};
+  const logout = () => {
+    localStorage.removeItem("username");
+    localStorage.removeItem("token");
+    user.value = "";
+    token.value = "";
+  };
 
-export { user, token, getAuthentication, login, signup, getUserInfo, logout };
+  return { user, token, getUserInfo, getAuthentication, login, logout };
+}

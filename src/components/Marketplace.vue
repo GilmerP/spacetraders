@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div v-if="marketplace.length > 0" class="container">
     <div class="searchbar">
       <h2>{{ `Market for: Ship ${ships.indexOf(selectedShip) + 1}` }}</h2>
     </div>
@@ -23,6 +23,9 @@
         }
       ]"
     />
+  </div>
+  <div class="container" v-else>
+    <h1>Loading...</h1>
   </div>
 </template>
 

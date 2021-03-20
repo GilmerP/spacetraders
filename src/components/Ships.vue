@@ -2,6 +2,9 @@
   <div v-if="ships.length > 0" class="container">
     <Ship v-for="(ship, index) in ships" :key="index" :ship="ship" />
   </div>
+  <div class="container" v-else>
+    <h1>Loading...</h1>
+  </div>
   <message
     :handleClose="handleClose"
     :title="popUp.title"

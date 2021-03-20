@@ -45,6 +45,7 @@ export default defineComponent({
             buttons: [
               {
                 text: "Take Out",
+                type: "Button",
                 action: () => {
                   takeOutLoan(x.type).then(data => {
                     if (data.error) {

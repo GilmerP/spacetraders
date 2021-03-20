@@ -50,6 +50,7 @@ export default defineComponent({
             buttons: [
               {
                 text: "Buy",
+                type: "Button",
                 action: () =>
                   buyShip(x).then(data => {
                     if (data.error) {

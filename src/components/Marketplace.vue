@@ -3,25 +3,11 @@
     <div class="searchbar">
       <h2>{{ `Market for: Ship ${ships.indexOf(selectedShip) + 1}` }}</h2>
     </div>
-    <item-card
+    <good
       v-for="(good, index) in marketplace"
       :key="index"
-      :header="good.symbol"
-      :iconName="getIconForGood(good.symbol)"
-      :content="[
-        {
-          name: 'price/unit',
-          value: Number(good.pricePerUnit).toLocaleString()
-        },
-        {
-          name: 'quantity available',
-          value: Number(good.quantityAvailable).toLocaleString()
-        },
-        {
-          name: 'volume/unit',
-          value: Number(good.volumePerUnit).toLocaleString()
-        }
-      ]"
+      :good="good"
+      :shipID="selectedShip.id"
     />
   </div>
   <div class="container" v-else>
@@ -32,7 +18,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { fetchUserShips, getMarketplace } from "../api";
-import ItemCard from "./ItemCard.vue";
+import Good from "./Good.vue";
 
 interface PurchaseLocations {
   location: string;
@@ -46,37 +32,16 @@ interface Ship {
   type: string;
   location: string;
   purchaseLocations: PurchaseLocations[];
+  id: string;
 }
 
 export default defineComponent({
-  components: { ItemCard },
+  components: { Good },
   setup() {
     const ships = ref([]);
     const selectedShip = ref({} as Ship);
     const marketplace = ref([]);
 
-    const getIconForGood = (goodName: string) => {
-      switch (goodName.toUpperCase()) {
-        case "research".toUpperCase():
-          return "search";
-        case "workers".toUpperCase():
-          return "wrench";
-        case "chemicals".toUpperCase():
-          return "bong";
-        case "ship_plating".toUpperCase():
-          return "shield-alt";
-        case "metals".toUpperCase():
-          return "industry";
-        case "fuel".toUpperCase():
-          return "burn";
-        case "machinery".toUpperCase():
-          return "cogs";
-        case "ship_parts".toUpperCase():
-          return "box-open";
-        default:
-          return "";
-      }
-    };
     onMounted(() => {
       fetchUserShips().then(data => {
         ships.value = data.ships;
@@ -90,7 +55,7 @@ export default defineComponent({
         });
       });
     });
-    return { ships, selectedShip, marketplace, getIconForGood };
+    return { ships, selectedShip, marketplace };
   }
 });
 </script>

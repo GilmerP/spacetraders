@@ -8,7 +8,7 @@
         { name: 'Term in Days:', value: loan.termInDays },
         { name: 'Type:', value: loan.type }
       ]"
-      :buttons="loan.buttons"
+      :inputs="loan.buttons"
     />
   </div>
 </template>

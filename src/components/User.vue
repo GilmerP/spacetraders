@@ -33,6 +33,7 @@
       :key="index"
       :header="`Ship ${index + 1}`"
       :content="[
+        { name: 'ID', value: ship.id },
         { name: 'class', value: ship.class },
         { name: 'location', value: ship.location },
         {

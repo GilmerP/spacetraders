@@ -65,6 +65,26 @@ const getMarketplace = async (location: string) => {
   ).then(res => res.json());
 };
 
+const placeOrder = async (
+  shipID: string,
+  goodToOrder: string,
+  quantityToOrder: number
+) => {
+  return fetch(`${connectionString}/users/${user.value}/purchase-orders`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json, text/plain, */*",
+      Authorization: `Bearer ${token.value}`,
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    body: JSON.stringify({
+      shipId: shipID,
+      good: goodToOrder,
+      quantity: quantityToOrder
+    })
+  }).then(response => response.json());
+};
+
 const getLoans = async () => {
   const response = await fetch(
     `${connectionString}/game/loans?token=${token.value}`
@@ -98,5 +118,6 @@ export {
   getMarketplace,
   getCurrentUser,
   buyShip,
-  createNewUser
+  createNewUser,
+  placeOrder
 };

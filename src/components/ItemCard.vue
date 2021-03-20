@@ -11,14 +11,14 @@
       </tr>
     </table>
 
-    <div v-if="buttons" class="btn-container">
-      <button
-        v-for="button in buttons"
-        :key="buttons.indexOf(button)"
-        v-on:click="button.action"
-      >
-        {{ button.text }}
-      </button>
+    <div v-if="inputs" class="btn-container">
+      <input
+        v-for="(input, index) in inputs"
+        :key="index"
+        :type="input.type"
+        v-on:click="input.action"
+        v-model="input.text"
+      />
     </div>
   </div>
 </template>
@@ -31,7 +31,7 @@ export default defineComponent({
     header: String,
     iconName: String,
     content: Array,
-    buttons: Array
+    inputs: Array
   },
   setup() {
     return {};
@@ -70,14 +70,14 @@ table {
   margin-top: 10px;
   justify-content: center;
 }
-button {
+input {
   background: black;
   border: none;
   border-radius: 5px;
   padding: 10px 15px;
   min-width: 100px;
 }
-button:hover {
+input:hover {
   opacity: 0.8;
 }
 </style>

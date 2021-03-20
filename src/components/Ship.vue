@@ -13,7 +13,7 @@
       },
       { name: 'Location: ', value: ship.purchaseLocations[0].location }
     ]"
-    :buttons="ship.buttons"
+    :inputs="ship.buttons"
   />
 </template>
 

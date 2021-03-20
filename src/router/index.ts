@@ -3,12 +3,24 @@ import User from "../components/User.vue";
 import Loans from "../components/Loans.vue";
 import Ships from "../components/Ships.vue";
 import Marketplace from "../components/Marketplace.vue";
+import Login from "../components/Login.vue";
+import Signup from "../components/Signup.vue";
 
 const routes = [
   {
     path: "/",
     name: "Home",
     component: User
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: Login
+  },
+  {
+    path: "/signup",
+    name: "Signup",
+    component: Signup
   },
   {
     path: "/loans",

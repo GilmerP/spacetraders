@@ -43,7 +43,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { getUser } from "../api";
+import { getCurrentUser } from "../api";
 import ItemCard from "./ItemCard.vue";
 
 export default defineComponent({
@@ -53,7 +53,7 @@ export default defineComponent({
     const isLoaded = ref(false);
 
     onMounted(() => {
-      getUser("gilli").then(data => {
+      getCurrentUser().then(data => {
         thisuser.value = data.user;
         isLoaded.value = true;
       });

@@ -37,7 +37,7 @@ export default defineComponent({
 
 <style scoped>
 div:not(.btn-container) {
-  background: rgb(150, 150, 150);
+  background: #969696;
   padding: 10px;
   margin: 10px;
   box-sizing: border-box;

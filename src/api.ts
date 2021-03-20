@@ -1,9 +1,10 @@
+import { user, token } from "./Auth";
 import { IShip } from "./interfaces";
 const connectionString = "https://api.spacetraders.io";
 
-const getUser = async (username: string) => {
+const getCurrentUser = async () => {
   const res = await fetch(
-    `https://api.spacetraders.io/users/${username}?token=${process.env.VUE_APP_TOKEN}`
+    `https://api.spacetraders.io/users/${user}?token=${token}`
   );
   return await res.json();
 };
@@ -11,7 +12,7 @@ const getUser = async (username: string) => {
 const fetchShips = async () => {
   const data = await fetch(`${connectionString}/game/ships`, {
     headers: {
-      Authorization: `Bearer ${process.env.VUE_APP_TOKEN}`
+      Authorization: `Bearer ${token}`
     }
   })
     .then(res => res.json())
@@ -25,7 +26,7 @@ const buyShip = async (ship: IShip) => {
       method: "POST",
       headers: {
         Accept: "application/json, text/plain, */*",
-        Authorization: `Bearer ${process.env.VUE_APP_TOKEN}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json;charset=UTF-8"
       },
       body: JSON.stringify({
@@ -37,9 +38,9 @@ const buyShip = async (ship: IShip) => {
 };
 
 const fetchUserShips = async () => {
-  const data = await fetch(`${connectionString}/users/gilli/ships`, {
+  const data = await fetch(`${connectionString}/users/${user}/ships`, {
     headers: {
-      Authorization: `Bearer ${process.env.VUE_APP_TOKEN}`
+      Authorization: `Bearer ${token}`
     }
   })
     .then(res => res.json())
@@ -52,28 +53,32 @@ const getMarketplace = async (location: string) => {
     `${connectionString}/game/locations/${location}/marketplace`,
     {
       headers: {
-        Authorization: `Bearer ${process.env.VUE_APP_TOKEN}`
+        Authorization: `Bearer ${token}`
       }
     }
   ).then(res => res.json());
 };
 
 const getLoans = async () => {
-  const response = await fetch(
-    `${connectionString}/game/loans?token=${process.env.VUE_APP_TOKEN}`
-  );
+  const response = await fetch(`${connectionString}/game/loans?token=${token}`);
   return response.json();
 };
 
 const takeOutLoan = async (loanType: string) => {
-  return fetch(`${connectionString}/users/gilli/loans`, {
+  return fetch(`${connectionString}/users/${user}/loans`, {
     method: "POST",
     headers: {
       Accept: "application/json, text/plain, */*",
-      Authorization: `Bearer ${process.env.VUE_APP_TOKEN}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json;charset=UTF-8"
     },
     body: JSON.stringify({ type: loanType })
+  }).then(response => response.json());
+};
+
+const createNewUser = async (username: string) => {
+  return fetch(`${connectionString}/users/${username}/token`, {
+    method: "POST"
   }).then(response => response.json());
 };
 
@@ -83,6 +88,7 @@ export {
   getLoans,
   takeOutLoan,
   getMarketplace,
-  getUser,
-  buyShip
+  getCurrentUser,
+  buyShip,
+  createNewUser
 };

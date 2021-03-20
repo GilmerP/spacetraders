@@ -2,14 +2,20 @@
   <div v-if="isLoaded" class="container">
     <loan v-for="loan in loans" :key="loans.indexOf(loan)" :loan="loan" />
   </div>
-  <error :isVisible="hasError" :msg="errorMessage" :handleClose="closeError" />
+  <message
+    :isVisible="popUp.isVisible"
+    :msg="popUp.message"
+    :title="popUp.title"
+    :handleClose="closeError"
+  />
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { getLoans, takeOutLoan } from "../api";
-import Error from "./Error.vue";
+import Message from "./Message.vue";
 import Loan from "./Loan.vue";
+import { PopUp } from "../classes";
 
 interface Loan {
   amount: string;
@@ -21,15 +27,14 @@ interface Loan {
 }
 
 export default defineComponent({
-  components: { Loan, Error },
+  components: { Loan, Message },
   setup() {
     const loans = ref([]);
     const isLoaded = ref(false);
+    const popUp = ref(new PopUp("", "", false));
 
-    const hasError = ref(false);
-    const errorMessage = ref("");
     const closeError = () => {
-      hasError.value = false;
+      popUp.value.isVisible = false;
     };
 
     onMounted(() => {
@@ -43,8 +48,13 @@ export default defineComponent({
                 action: () => {
                   takeOutLoan(x.type).then(data => {
                     if (data.error) {
-                      hasError.value = true;
-                      errorMessage.value = data.error.message;
+                      popUp.value.title = "Error";
+                      popUp.value.message = data.error.message;
+                      popUp.value.isVisible = true;
+                    } else {
+                      popUp.value.title = "Congrats...";
+                      popUp.value.message = "You are in debt now!";
+                      popUp.value.isVisible = true;
                     }
                   });
                 }
@@ -60,8 +70,7 @@ export default defineComponent({
       loans,
       isLoaded,
       takeOutLoan,
-      hasError,
-      errorMessage,
+      popUp,
       closeError
     };
   }

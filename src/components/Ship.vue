@@ -1,5 +1,6 @@
 <template>
   <item-card
+    :iconName="ship.icon"
     :content="[
       { name: 'Class: ', value: ship.class },
       { name: 'Cargo: ', value: ship.maxCargo },

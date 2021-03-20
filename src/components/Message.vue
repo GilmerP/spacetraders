@@ -1,8 +1,8 @@
 <template>
-  <div v-if="isVisible" class="error-wrapper">
-    <div class="error-message">
-      <span @click="handleClose(arg, event)">close</span>
-      <h2>Error</h2>
+  <div v-if="isVisible" class="message-wrapper">
+    <div class="message">
+      <span @click="handleClose(arg, event)">X</span>
+      <h2>{{ title }}</h2>
       <p>{{ msg }}</p>
     </div>
   </div>
@@ -14,6 +14,7 @@ import { defineComponent } from "vue";
 export default defineComponent({
   props: {
     isVisible: { type: Boolean, default: false },
+    title: { type: String, default: "Message" },
     msg: { type: String, default: "Sorry, something went wrong" },
     handleClose: Function
   },
@@ -24,8 +25,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.error-wrapper {
-  position: absolute;
+.message-wrapper {
+  position: fixed;
   top: 0;
   left: 0;
   display: flex;
@@ -34,8 +35,9 @@ export default defineComponent({
   height: 100%;
   width: 100%;
   background: rgba(20, 20, 20, 0.8);
+  backdrop-filter: blur(2px);
 }
-.error-message {
+.message {
   position: relative;
   display: flex;
   padding: 10px;
@@ -43,7 +45,7 @@ export default defineComponent({
   justify-content: space-evenly;
   flex-direction: column;
   background: rgb(150, 150, 150);
-  min-height: 100px;
+  min-height: 150px;
   max-width: 250px;
   border-radius: 10px;
   text-align: center;

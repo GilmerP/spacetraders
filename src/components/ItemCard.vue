@@ -1,6 +1,9 @@
 <template>
-  <div>
-    <h2>{{ header }}</h2>
+  <div class="wrapper">
+    <div class="header">
+      <h2 v-if="header">{{ header }}</h2>
+      <fa-icon class="icon" v-if="iconName" :icon="iconName" />
+    </div>
     <table>
       <tr v-for="prop in content" :key="content[prop]">
         <td>{{ prop.name }}</td>
@@ -26,6 +29,7 @@ import { defineComponent } from "vue";
 export default defineComponent({
   props: {
     header: String,
+    iconName: String,
     content: Array,
     buttons: Array
   },
@@ -36,7 +40,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-div:not(.btn-container) {
+.wrapper {
   background: #969696;
   padding: 10px;
   margin: 10px;
@@ -45,6 +49,17 @@ div:not(.btn-container) {
   min-width: 150px;
   width: 280px;
   border-radius: 10px;
+}
+h2 {
+  flex-grow: 1;
+}
+.icon {
+  font-size: 30px;
+}
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 table {
   width: 100%;

@@ -7,6 +7,7 @@
       v-for="(good, index) in marketplace"
       :key="index"
       :header="good.symbol"
+      :iconName="getIconForGood(good.symbol)"
       :content="[
         {
           name: 'price/unit',
@@ -51,6 +52,28 @@ export default defineComponent({
     const selectedShip = ref({} as Ship);
     const marketplace = ref([]);
 
+    const getIconForGood = (goodName: string) => {
+      switch (goodName.toUpperCase()) {
+        case "research".toUpperCase():
+          return "search";
+        case "workers".toUpperCase():
+          return "wrench";
+        case "chemicals".toUpperCase():
+          return "bong";
+        case "ship_plating".toUpperCase():
+          return "shield-alt";
+        case "metals".toUpperCase():
+          return "industry";
+        case "fuel".toUpperCase():
+          return "burn";
+        case "machinery".toUpperCase():
+          return "cogs";
+        case "ship_parts".toUpperCase():
+          return "box-open";
+        default:
+          return "";
+      }
+    };
     onMounted(() => {
       fetchUserShips().then(data => {
         ships.value = data.ships;
@@ -64,7 +87,7 @@ export default defineComponent({
         });
       });
     });
-    return { ships, selectedShip, marketplace };
+    return { ships, selectedShip, marketplace, getIconForGood };
   }
 });
 </script>

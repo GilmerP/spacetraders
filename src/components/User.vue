@@ -2,12 +2,15 @@
   <div v-if="isLoaded" class="container">
     <item-card
       :header="thisuser.username.toUpperCase()"
+      :iconName="'user-astronaut'"
       :content="[
-        { name: 'credits', value: Number(thisuser.credits).toLocaleString() }
+        { name: 'credits', value: Number(thisuser.credits).toLocaleString() },
+        { name: 'token', value: token }
       ]"
     />
     <item-card
       :header="'Active Loan'"
+      :iconName="'coins'"
       :content="
         thisuser.loans.length > 0
           ? [
@@ -51,6 +54,7 @@ export default defineComponent({
   setup() {
     const thisuser = ref({});
     const isLoaded = ref(false);
+    const token = localStorage.getItem("token");
 
     onMounted(() => {
       getCurrentUser().then(data => {
@@ -61,7 +65,8 @@ export default defineComponent({
 
     return {
       thisuser,
-      isLoaded
+      isLoaded,
+      token
     };
   }
 });

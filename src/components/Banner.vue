@@ -7,6 +7,7 @@
       <router-link to="/ships">Ships</router-link>
       <router-link to="/market">Marketplace</router-link>
       <router-link to="/map">Map</router-link>
+      <router-link to="/flights">Flights</router-link>
       <router-link @click="handleLogout" to="/Login">Log Out</router-link>
     </nav>
   </div>
@@ -49,12 +50,10 @@ nav a {
   text-decoration: none;
   margin-left: 10px;
 }
-a:nth-last-child(2) {
-  flex-grow: 1;
-}
 a:last-child {
   background: red;
   padding: 5px;
   border-radius: 5px;
+  margin-left: auto;
 }
 </style>

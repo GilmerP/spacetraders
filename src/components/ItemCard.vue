@@ -46,8 +46,7 @@ export default defineComponent({
   margin: 10px;
   box-sizing: border-box;
   min-height: 150px;
-  min-width: 150px;
-  width: 280px;
+  min-width: 300px;
   border-radius: 10px;
 }
 h2 {

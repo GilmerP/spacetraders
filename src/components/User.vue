@@ -28,6 +28,8 @@
           : [{ name: 'No loan taken' }]
       "
     />
+  </div>
+  <div class="container">
     <item-card
       v-for="(ship, index) in thisuser.ships"
       :key="index"
@@ -35,7 +37,7 @@
       :content="[
         { name: 'ID', value: ship.id },
         { name: 'class', value: ship.class },
-        { name: 'location', value: ship.location || 'travelling' },
+        { name: 'location', value: ship.location || 'travelling...' },
         {
           name: 'space available',
           value: ship.spaceAvailable + '/' + ship.maxCargo

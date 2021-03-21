@@ -16,7 +16,7 @@
       :change="handleChange"
     />
     <div class="searchbar">
-      <h2>SELL</h2>
+      <h2>Inventory</h2>
     </div>
     <sell-good
       v-for="(good, index) in selectedShip.cargo"

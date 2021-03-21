@@ -148,6 +148,12 @@ const createFlightPlan = async (shipID: string, destination: string) => {
   }).then(response => response.json());
 };
 
+const getFlightsForSystem = async (systemName: string) => {
+  return await fetch(
+    `${connectionString}/game/systems/${systemName}/flight-plans?token=${token.value}`
+  ).then(res => res.json());
+};
+
 export {
   fetchShips,
   fetchUserShips,
@@ -160,5 +166,6 @@ export {
   placeOrder,
   getPlanets,
   createFlightPlan,
-  sellGood
+  sellGood,
+  getFlightsForSystem
 };

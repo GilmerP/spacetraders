@@ -46,9 +46,12 @@ export default defineComponent({
   flex-direction: column;
   background: rgb(150, 150, 150);
   min-height: 150px;
-  max-width: 250px;
+  min-width: 250px;
   border-radius: 10px;
   text-align: center;
+}
+p {
+  white-space: pre-line;
 }
 span {
   position: absolute;

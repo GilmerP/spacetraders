@@ -110,6 +110,24 @@ const createNewUser = async (username: string) => {
   }).then(response => response.json());
 };
 
+const getPlanets = async (systemName: string) => {
+  return await fetch(
+    `${connectionString}/game/systems/${systemName}/locations?token=${token.value}`
+  ).then(res => res.json());
+};
+
+const createFlightPlan = async (shipID: string, destination: string) => {
+  return fetch(`${connectionString}/users/${user.value}/flight-plans`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json, text/plain, */*",
+      Authorization: `Bearer ${token.value}`,
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    body: JSON.stringify({ shipId: shipID, destination: destination })
+  }).then(response => response.json());
+};
+
 export {
   fetchShips,
   fetchUserShips,
@@ -119,5 +137,7 @@ export {
   getCurrentUser,
   buyShip,
   createNewUser,
-  placeOrder
+  placeOrder,
+  getPlanets,
+  createFlightPlan
 };

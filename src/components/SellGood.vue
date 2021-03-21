@@ -33,12 +33,14 @@ import ItemCard from "./ItemCard.vue";
 import { sellGood } from "../api";
 import Message from "./Message.vue";
 import { PopUp } from "@/classes";
+import Common from "@/common";
 
 export default defineComponent({
   components: { ItemCard, Message },
   props: {
     good: Object,
-    shipID: String
+    shipID: String,
+    change: { type: Function, required: true }
   },
   setup(props) {
     const popUp = ref(new PopUp());
@@ -53,39 +55,18 @@ export default defineComponent({
           if (data.error) {
             popUp.value = new PopUp(data.error.message, "Error", true);
           } else {
-            console.log(data);
             const quantity = data.order.quantity;
             const good = data.order.good;
             const total = data.order.total;
             const message = `You sold ${quantity} ${good} and made ${total} credits`;
             popUp.value = new PopUp(message, "Ching-Ching", true);
+            props.change();
           }
         });
       }
     };
 
-    const getIconForGood = (goodName: string) => {
-      switch (goodName.toUpperCase()) {
-        case "research".toUpperCase():
-          return "search";
-        case "workers".toUpperCase():
-          return "wrench";
-        case "chemicals".toUpperCase():
-          return "bong";
-        case "ship_plating".toUpperCase():
-          return "shield-alt";
-        case "metals".toUpperCase():
-          return "industry";
-        case "fuel".toUpperCase():
-          return "burn";
-        case "machinery".toUpperCase():
-          return "cogs";
-        case "ship_parts".toUpperCase():
-          return "box-open";
-        default:
-          return "";
-      }
-    };
+    const getIconForGood = Common.getIconForGood;
 
     return {
       getIconForGood,

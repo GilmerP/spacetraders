@@ -21,4 +21,11 @@ interface ObjectLocation {
   ships: Array<IShip>;
 }
 
-export { PurchaseLocations, IShip, ObjectLocation };
+interface MarketplaceGood {
+  pricePerUnit: number;
+  quantityAvailable: number;
+  symbol: string;
+  volumePerUnit: number;
+}
+
+export { PurchaseLocations, IShip, ObjectLocation, MarketplaceGood };

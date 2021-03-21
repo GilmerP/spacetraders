@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <svg width="1000" height="1000">
+      <!-- For each object a circle (PLANTES, MOONS, etc.) -->
       <circle
         v-for="(location, index) in locations"
         :key="index"
@@ -13,23 +14,38 @@
       >
         <title>{{ "Name: " + location.name }}</title>
       </circle>
+
+      <!-- For each ship a smaller circle -->
       <circle
-        v-if="ship.location"
+        v-for="(ship, index) in ships"
+        :key="ship.id"
         class="ship Object"
         :cx="ship.x * 5 + 500"
         :cy="500 - ship.y * 5"
         r="10"
         fill="green"
       >
-        <title>Ship</title>
+        <title>Ship {{ index + 1 }}</title>
       </circle>
     </svg>
+
     <div v-if="selectedObject.name" class="location-info">
       <div>
         <h3>Name: {{ selectedObject.name }}</h3>
         <h3>Type: {{ selectedObject.type }}</h3>
       </div>
-      <input type="button" value="Travel" @click="handleTravel" />
+
+      <select v-model="selectedShip">
+        <option v-for="(ship, index) in ships" :key="index" :value="ship">{{
+          ship.location + ` (Ship ${index + 1})`
+        }}</option>
+      </select>
+
+      <input
+        type="button"
+        value="Travel"
+        @click="() => handleTravel(selectedShip)"
+      />
     </div>
   </div>
   <message
@@ -59,37 +75,35 @@ export default defineComponent({
     };
 
     const locations = ref([]);
-    const typeFilter = ref([
-      "PLANET",
-      "MOON",
-      "GAS_GIANT",
-      "ASTEROID",
-      "WORMHOLE"
-    ]);
 
     const selectedObject = ref({} as ObjectLocation);
     const handleSelect = (location: ObjectLocation) => {
       selectedObject.value = location;
     };
 
-    const ship = ref({} as IShip);
+    const ships = ref([]);
 
-    const handleTravel = () => {
-      createFlightPlan(ship.value.id, selectedObject.value.symbol).then(
-        data => {
-          if (data.error) {
-            popUp.value = new PopUp(data.error.message, "Error", true);
-          } else {
-            console.log(data);
-          }
+    const handleTravel = (ship: IShip) => {
+      createFlightPlan(ship.id, selectedObject.value.symbol).then(data => {
+        if (data.error) {
+          popUp.value = new PopUp(data.error.message, "Error", true);
+        } else {
+          console.log(data);
+          popUp.value = new PopUp(
+            `You are on your way to ${data.flightPlan.destination}! \n Remaining seconds: ${data.flightPlan.timeRemainingInSeconds}`,
+            "To infinity and beyond!",
+            true
+          );
         }
-      );
+      });
     };
 
+    const selectedShip = ref({} as IShip);
     onMounted(() => {
       fetchUserShips().then(data => {
-        ship.value = data.ships[0];
-        console.log(data.ships);
+        // eslint-disable-next-line
+        ships.value = data.ships.filter((x: any) => x.location);
+        selectedShip.value = data.ships[0];
 
         let shipLocation = data.ships[0].location as string;
         shipLocation = shipLocation.split("-")[0];
@@ -97,7 +111,6 @@ export default defineComponent({
           if (data.error) {
             popUp.value = new PopUp(data.error.message, "Error", true);
           } else {
-            console.log(data.locations);
             locations.value = data.locations;
           }
         });
@@ -109,10 +122,10 @@ export default defineComponent({
       handleClose,
       locations,
       handleSelect,
-      typeFilter,
       selectedObject,
-      ship,
-      handleTravel
+      ships,
+      handleTravel,
+      selectedShip
     };
   }
 });
@@ -125,10 +138,6 @@ export default defineComponent({
 }
 label {
   margin-right: 20px;
-}
-svg {
-  box-sizing: border-box;
-  background: black;
 }
 .PLANET {
   fill: violet;
@@ -163,5 +172,10 @@ input {
   padding: 10px;
   background: black;
   border: none;
+}
+select,
+option {
+  color: black;
+  margin-left: 15px;
 }
 </style>

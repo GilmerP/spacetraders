@@ -1,13 +1,19 @@
 <template>
-  <div v-if="marketplace.length > 0" class="container">
+  <div v-if="ships.length > 0" class="container">
     <div class="searchbar">
-      <h2>{{ `Market for: Ship ${ships.indexOf(selectedShip) + 1}` }}</h2>
+      <h2>{{ "Market for: " }}</h2>
+      <select v-model="selectedShip">
+        <option v-for="(ship, index) in ships" :key="index" :value="ship">{{
+          (ship.location || "travelling") + ` (Ship ${index + 1})`
+        }}</option>
+      </select>
     </div>
     <buyGood
       v-for="(good, index) in marketplace"
       :key="index"
       :good="good"
       :shipID="selectedShip.id"
+      :change="handleChange"
     />
     <div class="searchbar">
       <h2>SELL</h2>
@@ -17,18 +23,28 @@
       :key="index"
       :good="good"
       :shipID="selectedShip.id"
+      :change="handleChange"
     />
   </div>
   <div class="container" v-else>
     <h1>Loading...</h1>
   </div>
+  <message
+    :handleClose="handleClose"
+    :isVisible="popUp.isVisible"
+    :msg="popUp.message"
+    :title="popUp.title"
+  />
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { PopUp } from "@/classes";
+import { defineComponent, onMounted, ref, watch } from "vue";
 import { fetchUserShips, getMarketplace } from "../api";
 import BuyGood from "./BuyGood.vue";
 import SellGood from "./SellGood.vue";
+import Message from "./Message.vue";
+import { MarketplaceGood } from "@/interfaces";
 
 interface PurchaseLocations {
   location: string;
@@ -47,28 +63,67 @@ interface Ship {
 }
 
 export default defineComponent({
-  components: { BuyGood, SellGood },
+  components: { BuyGood, SellGood, Message },
   setup() {
     const ships = ref([]);
     const selectedShip = ref({} as Ship);
     const marketplace = ref([]);
+    const popUp = ref(new PopUp());
 
-    onMounted(() => {
+    const handleClose = () => {
+      popUp.value.isVisible = false;
+    };
+
+    const assignUserShips = () => {
       fetchUserShips().then(data => {
         ships.value = data.ships;
-        selectedShip.value = data.ships[0];
-        console.log(selectedShip.value);
+        selectedShip.value = selectedShip.value.id
+          ? selectedShip.value
+          : ships.value[0];
+      });
+    };
 
+    const assignMarketplace = () => {
+      if (selectedShip.value.location) {
         getMarketplace(selectedShip.value.location).then(data => {
           if (data.error) {
-            //TODO: error handling
+            popUp.value = new PopUp(data.error.message, "Error", true);
+            marketplace.value = [];
           } else {
-            marketplace.value = data.location.marketplace;
+            marketplace.value = data.location.marketplace.sort(
+              (x: MarketplaceGood, y: MarketplaceGood) => {
+                return x.pricePerUnit - y.pricePerUnit;
+              }
+            );
           }
         });
-      });
+      } else {
+        marketplace.value = [];
+      }
+    };
+
+    const handleChange = () => {
+      assignUserShips();
+      assignMarketplace();
+    };
+
+    watch(selectedShip, () => {
+      marketplace.value = [];
+      assignMarketplace();
     });
-    return { ships, selectedShip, marketplace };
+
+    onMounted(() => {
+      assignUserShips();
+    });
+
+    return {
+      ships,
+      selectedShip,
+      marketplace,
+      handleChange,
+      popUp,
+      handleClose
+    };
   }
 });
 </script>
@@ -77,5 +132,13 @@ export default defineComponent({
 .searchbar {
   width: 100%;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+select,
+option {
+  color: black;
+  margin-left: 15px;
 }
 </style>

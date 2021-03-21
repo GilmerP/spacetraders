@@ -13,7 +13,11 @@ import {
   faIndustry,
   faBoxOpen,
   faShieldAlt,
-  faCogs
+  faCogs,
+  faBolt,
+  faTshirt,
+  faHamburger,
+  faTags
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import useUser from "./Auth";
@@ -33,7 +37,11 @@ library.add(
   faIndustry,
   faBoxOpen,
   faShieldAlt,
-  faCogs
+  faCogs,
+  faBolt,
+  faTshirt,
+  faHamburger,
+  faTags
 );
 
 router.beforeEach((to, from, next) => {

@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Space Traders</h1>
-    <nav v-if="user" class="nav">
+    <nav v-if="user">
       <router-link to="/">User</router-link>
       <router-link to="/loans">Loans</router-link>
       <router-link to="/ships">Ships</router-link>

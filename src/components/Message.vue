@@ -1,7 +1,7 @@
 <template>
   <div v-if="isVisible" class="message-wrapper">
     <div class="message">
-      <span @click="handleClose(arg, event)">X</span>
+      <span @click="handleClose">X</span>
       <h2>{{ title }}</h2>
       <p>{{ msg }}</p>
     </div>

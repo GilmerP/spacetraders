@@ -103,9 +103,9 @@ export default defineComponent({
       fetchUserShips().then(data => {
         // eslint-disable-next-line
         ships.value = data.ships.filter((x: any) => x.location);
-        selectedShip.value = data.ships[0];
+        selectedShip.value = data.ships.filter((x: IShip) => x.location)[0];
 
-        let shipLocation = data.ships[0].location as string;
+        let shipLocation = selectedShip.value.location as string;
         shipLocation = shipLocation.split("-")[0];
         getPlanets(shipLocation).then(data => {
           if (data.error) {

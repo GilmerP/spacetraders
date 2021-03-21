@@ -9,6 +9,7 @@ interface IShip {
   maxCargo: number;
   type: string;
   id: string;
+  location: string;
   purchaseLocations: PurchaseLocations[];
 }
 

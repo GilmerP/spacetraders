@@ -85,6 +85,26 @@ const placeOrder = async (
   }).then(response => response.json());
 };
 
+const sellGood = async (
+  shipID: string,
+  goodToSell: string,
+  quantityToSell: number
+) => {
+  return fetch(`${connectionString}/users/${user.value}/sell-orders`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json, text/plain, */*",
+      Authorization: `Bearer ${token.value}`,
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    body: JSON.stringify({
+      shipId: shipID,
+      good: goodToSell,
+      quantity: quantityToSell
+    })
+  }).then(response => response.json());
+};
+
 const getLoans = async () => {
   const response = await fetch(
     `${connectionString}/game/loans?token=${token.value}`
@@ -139,5 +159,6 @@ export {
   createNewUser,
   placeOrder,
   getPlanets,
-  createFlightPlan
+  createFlightPlan,
+  sellGood
 };

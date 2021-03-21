@@ -2,7 +2,7 @@
   <div class="good-wrapper">
     <item-card
       :header="good.symbol"
-      :iconName="getIconForGood(good.symbol)"
+      :iconName="getIconForGood(good.symbol || '')"
       :content="[
         {
           name: 'price/unit',
@@ -19,7 +19,7 @@
       ]"
     />
     <div class="action-wrapper">
-      <input v-model.number="quantityToBuy" type="number" step="1" />
+      <input v-model.number="quantity" type="number" step="1" />
       <input type="button" value="Buy" @click="handleBuy" />
     </div>
   </div>
@@ -49,10 +49,10 @@ export default defineComponent({
     const handleClose = () => {
       popUp.value.isVisible = false;
     };
-    const quantityToBuy = ref(10);
+    const quantity = ref(10);
     const handleBuy = () => {
       if (props.shipID && props.good) {
-        placeOrder(props.shipID, props.good.symbol, quantityToBuy.value).then(
+        placeOrder(props.shipID, props.good.symbol, quantity.value).then(
           data => {
             if (data.error) {
               popUp.value = new PopUp(data.error.message, "Error", true);
@@ -95,7 +95,13 @@ export default defineComponent({
       }
     };
 
-    return { getIconForGood, quantityToBuy, handleBuy, popUp, handleClose };
+    return {
+      getIconForGood,
+      quantity,
+      handleBuy,
+      popUp,
+      handleClose
+    };
   }
 });
 </script>

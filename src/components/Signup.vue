@@ -19,16 +19,13 @@ import { createNewUser } from "../api";
 import useUser from "../Auth";
 
 export default defineComponent({
-  emits: ["userChange"],
-  setup(props, { emit }) {
-    const { user, token } = useUser();
+  setup() {
+    const { login } = useUser();
     const username = ref("");
 
     const handleSignup = () => {
       createNewUser(username.value).then(data => {
-        user.value = username.value;
-        token.value = data.token;
-        emit("userChange", username.value);
+        login(username.value, data.token);
         router.push("/");
       });
     };

@@ -23,11 +23,9 @@ const name = ref("");
 const token = ref("");
 
 export default defineComponent({
-  emits: ["userChange"],
-  setup(props, { emit }) {
+  setup() {
     const handleLogin = () => {
       login(name.value, token.value);
-      emit("userChange", name.value);
       router.push("/");
     };
     return { handleLogin, name, token };

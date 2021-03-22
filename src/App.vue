@@ -11,15 +11,9 @@ import Banner from "./components/Banner.vue";
 
 export default defineComponent({
   components: { Banner },
-
   setup() {
     const { user } = useUser();
-
-    const handleUserChange = (username: string) => {
-      user.value = username;
-    };
-
-    return { user, handleUserChange };
+    return { user };
   }
 });
 </script>

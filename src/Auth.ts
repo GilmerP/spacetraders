@@ -1,34 +1,39 @@
 import { ref, watch } from "vue";
 
+const user = ref(localStorage.getItem("username") as string);
+const token = ref(localStorage.getItem("token") as string);
+
 export default function useUser() {
-  const user = ref(localStorage.getItem("username") as string);
-  const token = ref(localStorage.getItem("token") as string);
-
-  watch(user, user => localStorage.setItem("username", user));
-  watch(token, token => localStorage.setItem("token", token));
-
-  const getUserInfo = () => {
-    user.value = localStorage.getItem("username") as string;
-    token.value = localStorage.getItem("token") as string;
-  };
-
-  const getAuthentication = () => {
-    if (user.value && token.value) return true;
-    return false;
-  };
+  //Watchers constantly track changes and update the local storage
+  watch(user, user => {
+    if (user) {
+      localStorage.setItem("username", user);
+    } else {
+      localStorage.removeItem("username");
+    }
+  });
+  watch(token, token => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  });
 
   const login = (username: string, usertoken: string) => {
-    localStorage.setItem("username", username);
-    localStorage.setItem("token", usertoken);
-    getUserInfo();
+    user.value = username;
+    token.value = usertoken;
   };
 
   const logout = () => {
-    localStorage.removeItem("username");
-    localStorage.removeItem("token");
     user.value = "";
     token.value = "";
   };
 
-  return { user, token, getUserInfo, getAuthentication, login, logout };
+  return {
+    user,
+    token,
+    login,
+    logout
+  };
 }

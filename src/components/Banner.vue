@@ -24,11 +24,10 @@ export default defineComponent({
     }
   },
   setup() {
-    const { logout, getUserInfo } = useUser();
+    const { logout } = useUser();
     const handleLogout = () => {
       logout();
     };
-    getUserInfo();
     return { handleLogout };
   }
 });

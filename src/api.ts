@@ -2,10 +2,12 @@ import useUser from "./Auth";
 import { IShip } from "./interfaces";
 const connectionString = "https://api.spacetraders.io";
 
-const { user, token, getUserInfo } = useUser();
+const { user, token } = useUser();
 
 const getCurrentUser = async () => {
-  getUserInfo();
+  console.log(user.value);
+
+  //getUserInfo();
   const res = await fetch(
     `https://api.spacetraders.io/users/${user.value}?token=${token.value}`
   );

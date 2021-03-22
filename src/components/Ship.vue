@@ -1,36 +1,103 @@
 <template>
-  <item-card
-    :iconName="ship.icon"
-    :content="[
-      { name: 'Class: ', value: ship.class },
-      { name: 'Cargo: ', value: ship.maxCargo },
-      { name: 'Speed: ', value: ship.speed },
-      { name: 'Weapons: ', value: ship.weapons },
-      { name: 'Manufacturer: ', value: ship.manufacturer },
-      {
-        name: 'Price: ',
-        value: Number(ship.purchaseLocations[0].price).toLocaleString()
-      },
-      { name: 'Location: ', value: ship.purchaseLocations[0].location }
-    ]"
-    :inputs="ship.buttons"
-  />
+  <div class="item-card">
+    <div class="item-card_header">
+      <h2>{{ ship.manufacturer + " " + ship.class }}</h2>
+      <fa-icon class="item-card_header_icon" v-if="icon" :icon="icon" />
+    </div>
+    <table class="item-card_details">
+      <tr>
+        <td>Speed:</td>
+        <td>{{ ship.speed }}</td>
+      </tr>
+      <tr>
+        <td>Weapons:</td>
+        <td>{{ ship.weapons }}</td>
+      </tr>
+      <tr>
+        <td>Plating:</td>
+        <td>{{ ship.plating }}</td>
+      </tr>
+      <tr>
+        <td>Cargo:</td>
+        <td>{{ Number(ship.maxCargo).toLocaleString() }}</td>
+      </tr>
+    </table>
+
+    <div
+      class="purchase-location"
+      v-for="(location, index) in ship.purchaseLocations"
+      :key="index"
+    >
+      <div class="purchase-location_details">
+        <table>
+          <tr>
+            <td>Location:</td>
+            <td>{{ location.location }}</td>
+          </tr>
+          <tr>
+            <td>Price:</td>
+            <td>{{ Number(location.price).toLocaleString() }}</td>
+          </tr>
+        </table>
+      </div>
+      <input
+        type="button"
+        value="Buy"
+        @click="
+          () => handleBuy({ location: location.location, type: ship.type })
+        "
+      />
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import ItemCard from "./ItemCard.vue";
-
+import { IShip, PurchaseInformation } from "@/interfaces";
+import { defineComponent, PropType } from "vue";
 export default defineComponent({
-  components: { ItemCard },
+  components: {},
+  emits: ["buyShip"],
   props: {
-    ship: Object,
-    buyShip: Function
+    ship: { type: Object as PropType<IShip>, required: true }
   },
-  setup() {
-    return {};
+  setup(props, { emit }) {
+    const handleBuy = (ship: PurchaseInformation) => {
+      emit("buyShip", ship);
+    };
+    const getIcon = (shipClass: string) => {
+      switch (shipClass) {
+        case "MK-I":
+          return "rocket";
+        case "MK-II":
+          return "space-shuttle";
+        case "MK-III":
+          return "fighter-jet";
+        default:
+          return "";
+      }
+    };
+    const icon = getIcon(props.ship.class);
+    return { icon, handleBuy };
   }
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+td:last-child {
+  text-align: end;
+}
+.purchase-location {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  margin: 5px 0;
+  border-top: 1px solid white;
+}
+.purchase-location_details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin-right: 20px;
+}
+</style>

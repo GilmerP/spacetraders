@@ -1,58 +1,61 @@
 import useUser from "./Auth";
-import { IShip } from "./interfaces";
+import { IShip, PurchaseInformation } from "./interfaces";
 const connectionString = "https://api.spacetraders.io";
 
 const { user, token } = useUser();
 
 const getCurrentUser = async () => {
-  console.log(user.value);
-
-  //getUserInfo();
-  const res = await fetch(
-    `https://api.spacetraders.io/users/${user.value}?token=${token.value}`
-  );
-  return await res.json();
-};
-
-const fetchShips = async () => {
-  const data = await fetch(`${connectionString}/game/ships`, {
+  const res = await fetch(`${connectionString}/users/${user.value}`, {
     headers: {
       Authorization: `Bearer ${token.value}`
     }
-  })
-    .then(res => res.json())
-    .catch(err => console.log(err));
+  });
+  const data = await res.json();
   return data;
 };
 
-const buyShip = async (ship: IShip) => {
-  if (ship) {
-    return await fetch(
-      `https://api.spacetraders.io/users/${user.value}/ships`,
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json, text/plain, */*",
-          Authorization: `Bearer ${token.value}`,
-          "Content-Type": "application/json;charset=UTF-8"
-        },
-        body: JSON.stringify({
-          location: ship.purchaseLocations[0].location,
-          type: ship.type
-        })
-      }
-    ).then(res => res.json());
-  }
-};
-
-const fetchUserShips = async () => {
-  const data = await fetch(`${connectionString}/users/${user.value}/ships`, {
+const fetchShips = async (): Promise<Array<IShip> | string> => {
+  const response = await fetch(`${connectionString}/game/ships`, {
     headers: {
       Authorization: `Bearer ${token.value}`
     }
-  })
-    .then(res => res.json())
-    .catch(err => console.log(err));
+  });
+  const data = await response.json();
+  return data.error ? data.error.message : (data.ships as Array<IShip>);
+};
+
+const buyShip = async (
+  purchaseInformation: PurchaseInformation
+): Promise<IShip | string> => {
+  const response = await fetch(
+    `${connectionString}/users/${user.value}/ships`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token.value}`,
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      body: JSON.stringify({
+        location: purchaseInformation.location,
+        type: purchaseInformation.type
+      })
+    }
+  );
+  const data = await response.json();
+  return data.error ? data.error.message : (data.ship as IShip);
+};
+
+const fetchUserShips = async () => {
+  const response = await fetch(
+    `${connectionString}/users/${user.value}/ships`,
+    {
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    }
+  );
+  const data = await response.json();
   return data;
 };
 
@@ -134,7 +137,12 @@ const createNewUser = async (username: string) => {
 
 const getPlanets = async (systemName: string) => {
   return await fetch(
-    `${connectionString}/game/systems/${systemName}/locations?token=${token.value}`
+    `${connectionString}/game/systems/${systemName}/locations`,
+    {
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    }
   ).then(res => res.json());
 };
 
@@ -152,7 +160,12 @@ const createFlightPlan = async (shipID: string, destination: string) => {
 
 const getFlightsForSystem = async (systemName: string) => {
   return await fetch(
-    `${connectionString}/game/systems/${systemName}/flight-plans?token=${token.value}`
+    `${connectionString}/game/systems/${systemName}/flight-plans`,
+    {
+      headers: {
+        Authorization: `Bearer ${token.value}`
+      }
+    }
   ).then(res => res.json());
 };
 

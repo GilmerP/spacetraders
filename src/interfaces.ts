@@ -11,6 +11,11 @@ interface PurchaseLocations {
   price: number;
 }
 
+interface PurchaseInformation {
+  location: string;
+  type: string;
+}
+
 interface IShip {
   class: string;
   manufacturer: string;
@@ -51,5 +56,6 @@ export {
   ObjectLocation,
   MarketplaceGood,
   ILoan,
-  User
+  User,
+  PurchaseInformation
 };

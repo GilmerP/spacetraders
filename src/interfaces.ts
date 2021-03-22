@@ -1,3 +1,11 @@
+interface ILoan {
+  amount: string;
+  collateralRequired: boolean;
+  rate: number;
+  termInDays: number;
+  type: string;
+}
+
 interface PurchaseLocations {
   location: string;
   price: number;
@@ -11,6 +19,7 @@ interface IShip {
   id: string;
   location: string;
   purchaseLocations: PurchaseLocations[];
+  cargo: [];
 }
 
 interface ObjectLocation {
@@ -29,4 +38,18 @@ interface MarketplaceGood {
   volumePerUnit: number;
 }
 
-export { PurchaseLocations, IShip, ObjectLocation, MarketplaceGood };
+interface User {
+  username: string;
+  credits: number;
+  ships: IShip[];
+  loans: ILoan[];
+}
+
+export {
+  PurchaseLocations,
+  IShip,
+  ObjectLocation,
+  MarketplaceGood,
+  ILoan,
+  User
+};

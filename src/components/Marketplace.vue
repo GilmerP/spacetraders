@@ -44,29 +44,13 @@ import { fetchUserShips, getMarketplace } from "../api";
 import BuyGood from "./BuyGood.vue";
 import SellGood from "./SellGood.vue";
 import Message from "./Message.vue";
-import { MarketplaceGood } from "@/interfaces";
-
-interface PurchaseLocations {
-  location: string;
-  price: number;
-}
-
-interface Ship {
-  class: string;
-  manufacturer: string;
-  maxCargo: number;
-  type: string;
-  location: string;
-  purchaseLocations: PurchaseLocations[];
-  id: string;
-  cargo: [];
-}
+import { MarketplaceGood, IShip } from "@/interfaces";
 
 export default defineComponent({
   components: { BuyGood, SellGood, Message },
   setup() {
-    const ships = ref([]);
-    const selectedShip = ref({} as Ship);
+    const ships = ref<Array<IShip>>([]);
+    const selectedShip = ref<IShip>();
     const marketplace = ref([]);
     const popUp = ref(new PopUp());
 
@@ -77,14 +61,14 @@ export default defineComponent({
     const assignUserShips = () => {
       fetchUserShips().then(data => {
         ships.value = data.ships;
-        selectedShip.value = selectedShip.value.id
+        selectedShip.value = selectedShip.value
           ? selectedShip.value
           : ships.value[0];
       });
     };
 
     const assignMarketplace = () => {
-      if (selectedShip.value.location) {
+      if (selectedShip.value) {
         getMarketplace(selectedShip.value.location).then(data => {
           if (data.error) {
             popUp.value = new PopUp(data.error.message, "Error", true);

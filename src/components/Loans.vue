@@ -16,15 +16,7 @@ import { getLoans, takeOutLoan } from "../api";
 import Message from "./Message.vue";
 import Loan from "./Loan.vue";
 import { PopUp } from "../classes";
-
-interface Loan {
-  amount: string;
-  collateralRequired: boolean;
-  rate: number;
-  termInDays: number;
-  type: string;
-  buttons: Array<object>;
-}
+import { ILoan } from "@/interfaces";
 
 export default defineComponent({
   components: { Loan, Message },
@@ -39,7 +31,7 @@ export default defineComponent({
 
     onMounted(() => {
       getLoans().then(data => {
-        loans.value = data.loans.map((x: Loan) => {
+        loans.value = data.loans.map((x: ILoan) => {
           return {
             ...x,
             buttons: [

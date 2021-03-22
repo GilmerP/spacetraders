@@ -16,14 +16,20 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import useUser from "../Auth";
+
 export default defineComponent({
+  props: {
+    user: {
+      type: String
+    }
+  },
   setup() {
-    const { logout, getUserInfo, user } = useUser();
+    const { logout, getUserInfo } = useUser();
     const handleLogout = () => {
       logout();
     };
     getUserInfo();
-    return { user, handleLogout };
+    return { handleLogout };
   }
 });
 </script>

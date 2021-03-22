@@ -5,7 +5,7 @@
       <input type="text" name="username" id="username" v-model="name" />
       <label for="token">token:</label>
       <input type="text" name="token" id="token" v-model="token" />
-      <button @click="handleLogin">Log In</button>
+      <input type="button" value="Log In" @click="handleLogin" />
       <span
         >Need an account? <router-link to="/signup">Sign up</router-link>
       </span>
@@ -14,6 +14,7 @@
 </template>
 
 <script lang="ts">
+import router from "@/router";
 import { defineComponent, ref } from "vue";
 import useUser from "../Auth";
 const { login } = useUser();
@@ -21,12 +22,14 @@ const { login } = useUser();
 const name = ref("");
 const token = ref("");
 
-const handleLogin = () => {
-  login(name.value, token.value);
-};
-
 export default defineComponent({
-  setup() {
+  emits: ["userChange"],
+  setup(props, { emit }) {
+    const handleLogin = () => {
+      login(name.value, token.value);
+      emit("userChange", name.value);
+      router.push("/");
+    };
     return { handleLogin, name, token };
   }
 });

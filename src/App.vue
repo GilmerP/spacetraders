@@ -1,14 +1,26 @@
 <template>
-  <Banner />
-  <router-view />
+  <Banner :user="user" />
+  <router-view v-if="user" />
+  <router-view v-else @user-change="handleUserChange" />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import useUser from "./Auth";
 import Banner from "./components/Banner.vue";
 
 export default defineComponent({
-  components: { Banner }
+  components: { Banner },
+
+  setup() {
+    const { user } = useUser();
+
+    const handleUserChange = (username: string) => {
+      user.value = username;
+    };
+
+    return { user, handleUserChange };
+  }
 });
 </script>
 

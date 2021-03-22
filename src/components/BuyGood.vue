@@ -1,24 +1,25 @@
 <template>
-  <div class="good-wrapper">
-    <item-card
-      :header="good.symbol"
-      :iconName="getIconForGood(good.symbol || '')"
-      :content="[
-        {
-          name: 'price/unit',
-          value: Number(good.pricePerUnit).toLocaleString()
-        },
-        {
-          name: 'quantity available',
-          value: Number(good.quantityAvailable).toLocaleString()
-        },
-        {
-          name: 'volume/unit',
-          value: Number(good.volumePerUnit).toLocaleString()
-        }
-      ]"
-    />
-    <div class="action-wrapper">
+  <div class="item-card">
+    <div class="item-card_header">
+      <h2>{{ good.symbol }}</h2>
+      <fa-icon class="item-card_header_icon" v-if="icon" :icon="icon" />
+    </div>
+    <table class="item-card_details">
+      <tr>
+        <td>Price/Unit:</td>
+        <td>{{ good.pricePerUnit }}</td>
+      </tr>
+      <tr>
+        <td>Volume/Unit:</td>
+        <td>{{ good.volumePerUnit }}</td>
+      </tr>
+      <tr>
+        <td>Quantity available:</td>
+        <td>{{ Number(good.quantityAvailable).toLocaleString() }}</td>
+      </tr>
+    </table>
+
+    <div class="purchase-container">
       <input v-model.number="quantity" type="number" step="1" />
       <input type="button" value="Buy" @click="handleBuy" />
     </div>
@@ -32,51 +33,32 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import ItemCard from "./ItemCard.vue";
-import { placeOrder } from "../api";
+import { defineComponent, ref, PropType } from "vue";
 import Message from "./Message.vue";
 import { PopUp } from "@/classes";
 import Common from "../common";
+import { MarketplaceGood } from "@/interfaces";
 
 export default defineComponent({
-  components: { ItemCard, Message },
+  components: { Message },
   props: {
-    good: Object,
-    shipID: String,
-    change: { type: Function, required: true }
+    good: { type: Object as PropType<MarketplaceGood>, required: true }
   },
-  setup(props) {
+  emits: ["buyGood"],
+  setup(props, { emit }) {
     const popUp = ref(new PopUp());
     const handleClose = () => {
       popUp.value.isVisible = false;
     };
     const quantity = ref(10);
+
     const handleBuy = () => {
-      if (props.shipID && props.good) {
-        placeOrder(props.shipID, props.good.symbol, quantity.value).then(
-          data => {
-            if (data.error) {
-              popUp.value = new PopUp(data.error.message, "Error", true);
-            } else {
-              console.log(data.order);
-              const quantity = data.order.quantity;
-              const good = data.order.good;
-              const pricePerUnit = data.order.pricePerUnit;
-              const message = `You purchased ${quantity} ${good} for ${Number(
-                pricePerUnit
-              ) * Number(quantity)} credits`;
-              popUp.value = new PopUp(message, "Ching-Ching", true);
-              props.change();
-            }
-          }
-        );
-      }
+      emit("buyGood", { good: props.good.symbol, quantity: quantity.value });
     };
 
-    const getIconForGood = Common.getIconForGood;
+    const icon = Common.getIconForGood(props.good.symbol);
     return {
-      getIconForGood,
+      icon,
       quantity,
       handleBuy,
       popUp,
@@ -87,24 +69,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.good-wrapper {
-  padding: 20px;
-}
-.action-wrapper {
+.purchase-container {
   display: flex;
-  justify-content: center;
-}
-input[type="button"] {
-  position: relative;
-  flex: 1;
-}
-input[type="button"]:hover {
-  cursor: pointer;
-  opacity: 0.8;
-}
-input {
-  margin: 0 10px;
-  background: #969696;
-  border: none;
+  justify-content: space-evenly;
+  margin: 5px 0;
+  padding: 5px 0;
+  border-top: 1px solid white;
 }
 </style>

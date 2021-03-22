@@ -83,9 +83,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-td:last-child {
-  text-align: end;
-}
 .purchase-location {
   display: flex;
   justify-content: space-between;

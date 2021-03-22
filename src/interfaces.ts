@@ -43,6 +43,19 @@ interface MarketplaceGood {
   volumePerUnit: number;
 }
 
+interface OrderedGood {
+  good: string;
+  pricePerUnit: number;
+  quantity: number;
+  total: number;
+}
+
+interface Cargo {
+  good: string;
+  quantity: number;
+  totalVolume: number;
+}
+
 interface User {
   username: string;
   credits: number;
@@ -57,5 +70,7 @@ export {
   MarketplaceGood,
   ILoan,
   User,
-  PurchaseInformation
+  PurchaseInformation,
+  OrderedGood,
+  Cargo
 };

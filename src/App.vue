@@ -44,6 +44,9 @@ export default defineComponent({
   min-width: 300px;
   border-radius: 10px;
 }
+.item-card td:last-child {
+  text-align: end;
+}
 .item-card_header {
   display: flex;
   align-items: center;
@@ -64,7 +67,15 @@ export default defineComponent({
   padding: 10px 15px;
   min-width: 100px;
 }
-.item-card input:hover {
+.item-card input[type="button"]:hover {
   opacity: 0.8;
+}
+.item-card input[type="number"] {
+  box-sizing: border-box;
+  background: black;
+  border: none;
+  border-radius: 5px;
+  max-width: 100px;
+  text-align: center;
 }
 </style>

@@ -11,19 +11,17 @@
     <buyGood
       v-for="(good, index) in marketplace"
       :key="index"
+      @buyGood="handleBuy"
       :good="good"
-      :shipID="selectedShip.id"
-      :change="handleChange"
     />
     <div class="searchbar">
       <h2>Inventory</h2>
     </div>
     <sell-good
-      v-for="(good, index) in selectedShip.cargo"
+      v-for="(good, index) in cargo"
       :key="index"
       :good="good"
-      :shipID="selectedShip.id"
-      :change="handleChange"
+      @sellGood="handleSell"
     />
   </div>
   <div class="container" v-else>
@@ -39,19 +37,20 @@
 
 <script lang="ts">
 import { PopUp } from "@/classes";
-import { defineComponent, onMounted, ref, watch } from "vue";
-import { fetchUserShips, getMarketplace } from "../api";
+import { computed, defineComponent, onMounted, ref, watch } from "vue";
+import { fetchUserShips, getMarketplace, placeOrder, sellGood } from "../api";
 import BuyGood from "./BuyGood.vue";
 import SellGood from "./SellGood.vue";
 import Message from "./Message.vue";
-import { MarketplaceGood, IShip } from "@/interfaces";
+import { MarketplaceGood, IShip, OrderedGood } from "@/interfaces";
 
 export default defineComponent({
   components: { BuyGood, SellGood, Message },
   setup() {
     const ships = ref<Array<IShip>>([]);
     const selectedShip = ref<IShip>();
-    const marketplace = ref([]);
+    const cargo = computed(() => selectedShip.value?.cargo);
+    const marketplace = ref<Array<MarketplaceGood>>([]);
     const popUp = ref(new PopUp());
 
     const handleClose = () => {
@@ -61,26 +60,23 @@ export default defineComponent({
     const assignUserShips = () => {
       fetchUserShips().then(data => {
         ships.value = data.ships;
-        selectedShip.value = selectedShip.value
-          ? selectedShip.value
-          : ships.value[0];
+        selectedShip.value = ships.value[0];
       });
     };
 
-    const assignMarketplace = () => {
-      if (selectedShip.value) {
-        getMarketplace(selectedShip.value.location).then(data => {
-          if (data.error) {
-            popUp.value = new PopUp(data.error.message, "Error", true);
-            marketplace.value = [];
-          } else {
-            marketplace.value = data.location.marketplace.sort(
-              (x: MarketplaceGood, y: MarketplaceGood) => {
-                return x.pricePerUnit - y.pricePerUnit;
-              }
-            );
-          }
-        });
+    const assignMarketplace = async () => {
+      if (selectedShip.value && selectedShip.value.location) {
+        const response = await getMarketplace(selectedShip.value.location);
+        if (typeof response == "string") {
+          popUp.value = new PopUp(response, "Error", true);
+          marketplace.value = [];
+        } else {
+          //Sort Marketplace for lowest price
+          marketplace.value = response.sort(
+            (x: MarketplaceGood, y: MarketplaceGood) =>
+              x.pricePerUnit - y.pricePerUnit
+          );
+        }
       } else {
         marketplace.value = [];
       }
@@ -89,6 +85,48 @@ export default defineComponent({
     const handleChange = () => {
       assignUserShips();
       assignMarketplace();
+    };
+
+    const handleBuy = async (good: OrderedGood) => {
+      if (selectedShip.value && good) {
+        const response = await placeOrder(
+          selectedShip.value.id,
+          good.good,
+          good.quantity
+        );
+        if (typeof response == "string") {
+          popUp.value = new PopUp(response, "Error", true);
+        } else {
+          const quantity = response.quantity;
+          const good = response.good;
+          const pricePerUnit = response.pricePerUnit;
+          const message = `You purchased ${quantity} ${good} for ${Number(
+            pricePerUnit
+          ) * Number(quantity)} credits`;
+          popUp.value = new PopUp(message, "Ching-Ching", true);
+          handleChange();
+        }
+      }
+    };
+
+    const handleSell = async (goodToSell: OrderedGood) => {
+      if (selectedShip.value && goodToSell) {
+        const response = await sellGood(
+          selectedShip.value.id,
+          goodToSell.good,
+          goodToSell.quantity
+        );
+        if (typeof response == "string") {
+          popUp.value = new PopUp(response, "Error", true);
+        } else {
+          const quantity = response.quantity;
+          const good = response.good;
+          const total = response.total;
+          const message = `You sold ${quantity} ${good} and made ${total} credits`;
+          popUp.value = new PopUp(message, "Ching-Ching", true);
+          handleChange();
+        }
+      }
     };
 
     watch(selectedShip, () => {
@@ -106,7 +144,10 @@ export default defineComponent({
       marketplace,
       handleChange,
       popUp,
-      handleClose
+      handleClose,
+      handleBuy,
+      cargo,
+      handleSell
     };
   }
 });

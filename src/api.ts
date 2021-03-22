@@ -1,5 +1,10 @@
 import useUser from "./Auth";
-import { IShip, PurchaseInformation } from "./interfaces";
+import {
+  IShip,
+  MarketplaceGood,
+  OrderedGood,
+  PurchaseInformation
+} from "./interfaces";
 const connectionString = "https://api.spacetraders.io";
 
 const { user, token } = useUser();
@@ -59,55 +64,75 @@ const fetchUserShips = async () => {
   return data;
 };
 
-const getMarketplace = async (location: string) => {
-  return await fetch(
+const getMarketplace = async (
+  location: string
+): Promise<Array<MarketplaceGood> | string> => {
+  const response = await fetch(
     `${connectionString}/game/locations/${location}/marketplace`,
     {
       headers: {
         Authorization: `Bearer ${token.value}`
       }
     }
-  ).then(res => res.json());
+  );
+  const data = await response.json();
+  return data.error
+    ? (data.error.message as string)
+    : (data.location.marketplace as Array<MarketplaceGood>);
 };
 
 const placeOrder = async (
   shipID: string,
   goodToOrder: string,
   quantityToOrder: number
-) => {
-  return fetch(`${connectionString}/users/${user.value}/purchase-orders`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json, text/plain, */*",
-      Authorization: `Bearer ${token.value}`,
-      "Content-Type": "application/json;charset=UTF-8"
-    },
-    body: JSON.stringify({
-      shipId: shipID,
-      good: goodToOrder,
-      quantity: quantityToOrder
-    })
-  }).then(response => response.json());
+): Promise<OrderedGood | string> => {
+  const response = await fetch(
+    `${connectionString}/users/${user.value}/purchase-orders`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token.value}`,
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      body: JSON.stringify({
+        shipId: shipID,
+        good: goodToOrder,
+        quantity: quantityToOrder
+      })
+    }
+  );
+  const data = await response.json();
+  return data.error
+    ? (data.error.message as string)
+    : (data.order as OrderedGood);
 };
 
 const sellGood = async (
   shipID: string,
   goodToSell: string,
   quantityToSell: number
-) => {
-  return fetch(`${connectionString}/users/${user.value}/sell-orders`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json, text/plain, */*",
-      Authorization: `Bearer ${token.value}`,
-      "Content-Type": "application/json;charset=UTF-8"
-    },
-    body: JSON.stringify({
-      shipId: shipID,
-      good: goodToSell,
-      quantity: quantityToSell
-    })
-  }).then(response => response.json());
+): Promise<OrderedGood | string> => {
+  const response = await fetch(
+    `${connectionString}/users/${user.value}/sell-orders`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token.value}`,
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      body: JSON.stringify({
+        shipId: shipID,
+        good: goodToSell,
+        quantity: quantityToSell
+      })
+    }
+  );
+  const data = await response.json();
+  return data.error
+    ? (data.error.message as string)
+    : (data.order as OrderedGood);
 };
 
 const getLoans = async () => {

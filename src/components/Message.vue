@@ -1,66 +1,89 @@
 <template>
-  <div v-if="isVisible" class="message-wrapper">
-    <div class="message">
-      <span @click="handleClose">X</span>
-      <h2>{{ title }}</h2>
-      <p>{{ msg }}</p>
+  <transition name="slide-fade">
+    <div v-if="messageVisible" class="error">
+      <strong class="close-btn" @click="messageVisible = !messageVisible">
+        X
+      </strong>
+      <div class="error-content">
+        <p>{{ messageText }}</p>
+      </div>
+      <div class="loading-bar"></div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import useError from "@/Message";
 
 export default defineComponent({
-  props: {
-    isVisible: { type: Boolean, default: false },
-    title: { type: String, default: "Message" },
-    msg: { type: String, default: "Sorry, something went wrong" },
-    handleClose: Function
-  },
+  props: [],
   setup() {
-    return {};
+    const { messageText, messageVisible } = useError();
+    return { messageText, messageVisible };
   }
 });
 </script>
 
-<style scoped>
-.message-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  width: 100%;
-  background: rgba(20, 20, 20, 0.8);
-  backdrop-filter: blur(2px);
+<style>
+/* Enter and leave animations can use different */
+/* durations and timing functions.              */
+.slide-fade-enter-active {
+  transition: all 2s ease;
 }
-.message {
-  position: relative;
+.slide-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slide-fade-enter, .slide-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  transform: translateX(10px);
+  opacity: 0;
+}
+
+.error {
+  position: fixed;
+  top: 10%;
+  right: 10px;
+  min-width: 200px;
+  max-width: 400px;
+  background: #e40000;
+  color: white;
   display: flex;
-  padding: 10px;
-  align-items: center;
-  justify-content: space-evenly;
   flex-direction: column;
-  background: rgb(150, 150, 150);
-  min-height: 150px;
-  min-width: 250px;
+  align-items: center;
+  box-sizing: border-box;
   border-radius: 10px;
+  overflow: hidden;
   text-align: center;
 }
-p {
-  white-space: pre-line;
-}
-span {
+.error strong {
   position: absolute;
-  right: 0;
-  top: 0;
-  padding: 5px 10px;
-  font-size: 10px;
+  right: 10px;
 }
-span:hover {
+.error strong:hover {
   cursor: pointer;
+}
+.error-content {
+  margin: 50px;
+}
+.error-content p {
+  font-size: 20px;
+}
+
+@keyframes fill {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.loading-bar {
+  margin-top: auto;
+  height: 5px;
+  background-color: white;
+  animation: fill 3s forwards linear;
+  align-self: flex-start;
 }
 </style>

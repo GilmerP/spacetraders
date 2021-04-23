@@ -48,78 +48,60 @@
       />
     </div>
   </div>
-  <message
-    :handleClose="handleClose"
-    :isVisible="popUp.isVisible"
-    :msg="popUp.message"
-    :title="popUp.title"
-  />
 </template>
 
 <script lang="ts">
-import { getPlanets, fetchUserShips, createFlightPlan } from "@/api";
-import { PopUp } from "@/classes";
-import { IShip, ObjectLocation } from "@/interfaces";
+import { getCelestialBodys, fetchUserShips, createFlightPlan } from "@/api";
+import useMessage from "../Message";
+import Ship from "@/interfaces/Ship";
+import CelestialBody from "@/interfaces/CelestialBody";
 import { defineComponent, onMounted, ref } from "vue";
-import Message from "./Message.vue";
 
 export default defineComponent({
-  components: {
-    Message
-  },
-
   setup() {
-    const popUp = ref(new PopUp());
-    const handleClose = () => {
-      popUp.value.isVisible = false;
-    };
+    const locations = ref<Array<CelestialBody>>([]);
 
-    const locations = ref([]);
-
-    const selectedObject = ref({} as ObjectLocation);
-    const handleSelect = (location: ObjectLocation) => {
+    const selectedObject = ref({} as CelestialBody);
+    const handleSelect = (location: CelestialBody) => {
       selectedObject.value = location;
     };
 
-    const ships = ref([]);
+    const ships = ref<Array<Ship>>([]);
 
-    const handleTravel = (ship: IShip) => {
-      createFlightPlan(ship.id, selectedObject.value.symbol).then(data => {
-        if (data.error) {
-          popUp.value = new PopUp(data.error.message, "Error", true);
-        } else {
-          console.log(data);
-          popUp.value = new PopUp(
-            `You are on your way to ${data.flightPlan.destination}! \n Remaining seconds: ${data.flightPlan.timeRemainingInSeconds}`,
-            "To infinity and beyond!",
-            true
-          );
-        }
-      });
+    const { messageText, messageVisible } = useMessage();
+
+    const handleTravel = async (ship: Ship) => {
+      try {
+        const flightplan = await createFlightPlan(
+          ship.id,
+          selectedObject.value.symbol
+        );
+        messageText.value = `You are on your way to ${flightplan.destination}! \n Remaining seconds: ${flightplan.timeRemainingInSeconds}`;
+        messageVisible.value = true;
+      } catch (error) {
+        messageText.value = error;
+        messageVisible.value = true;
+      }
     };
 
-    const selectedShip = ref({} as IShip);
-    onMounted(() => {
-      fetchUserShips().then(data => {
-        // eslint-disable-next-line
-        ships.value = data.ships.filter((x: any) => x.location);
-        selectedShip.value = data.ships.filter((x: IShip) => x.location)[0];
+    const selectedShip = ref({} as Ship);
+    onMounted(async () => {
+      try {
+        const allShips = await fetchUserShips();
+        ships.value = allShips.filter(x => x.location);
+        selectedShip.value = ships.value[0];
 
+        //first section of the ship location is the systemname.
         let shipLocation = selectedShip.value.location as string;
         shipLocation = shipLocation.split("-")[0];
-        getPlanets(shipLocation).then(data => {
-          if (data.error) {
-            popUp.value = new PopUp(data.error.message, "Error", true);
-          } else {
-            locations.value = data.locations;
-          }
-        });
-      });
+        locations.value = await getCelestialBodys(shipLocation);
+      } catch (error) {
+        messageText.value = error;
+        messageVisible.value = true;
+      }
     });
 
     return {
-      popUp,
-      handleClose,
       locations,
       handleSelect,
       selectedObject,

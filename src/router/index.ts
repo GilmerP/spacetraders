@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory, Router } from "vue-router";
-import User from "../components/User.vue";
-import Loans from "../components/Loans.vue";
-import Ships from "../components/Ships.vue";
-import Marketplace from "../components/Marketplace.vue";
-import Map from "../components/Map.vue";
-import Flights from "../components/Flights.vue";
-import Login from "../components/Login.vue";
-import Signup from "../components/Signup.vue";
+import User from "../views/User.vue";
+import Loans from "../views/Loans.vue";
+import Ships from "../views/Ships.vue";
+import Marketplace from "../views/Marketplace.vue";
+import Map from "../views/Map.vue";
+import Flights from "../views/Flights.vue";
+import Login from "../views/Login.vue";
+import Signup from "../views/Signup.vue";
 
 const routes = [
   {

@@ -24,32 +24,21 @@
       <input type="button" value="Buy" @click="handleBuy" />
     </div>
   </div>
-  <message
-    :isVisible="popUp.isVisible"
-    :title="popUp.title"
-    :msg="popUp.message"
-    :handleClose="handleClose"
-  />
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, PropType } from "vue";
-import Message from "./Message.vue";
-import { PopUp } from "@/classes";
 import Common from "../common";
-import { MarketplaceGood } from "@/interfaces";
+import Good from "@/interfaces/Good";
 
 export default defineComponent({
-  components: { Message },
   props: {
-    good: { type: Object as PropType<MarketplaceGood>, required: true }
+    good: { type: Object as PropType<Good>, required: true }
   },
+
   emits: ["buyGood"],
+
   setup(props, { emit }) {
-    const popUp = ref(new PopUp());
-    const handleClose = () => {
-      popUp.value.isVisible = false;
-    };
     const quantity = ref(10);
 
     const handleBuy = () => {
@@ -60,9 +49,7 @@ export default defineComponent({
     return {
       icon,
       quantity,
-      handleBuy,
-      popUp,
-      handleClose
+      handleBuy
     };
   }
 });
@@ -75,5 +62,8 @@ export default defineComponent({
   margin: 5px 0;
   padding: 5px 0;
   border-top: 1px solid white;
+}
+input[type="button"] {
+  background: green;
 }
 </style>

@@ -3,7 +3,7 @@
     <item-card
       v-for="flight in flights"
       :key="flight.id"
-      :header="`From ${flight.from} To ${flight.to}`"
+      :header="`From ${flight.departure} To ${flight.destination}`"
       :content="[{ name: 'User', value: flight.username }]"
     />
   </div>
@@ -11,17 +11,20 @@
 
 <script lang="ts">
 import { getFlightsForSystem } from "@/api";
+import FlightPlan from "@/interfaces/FlightPlan";
 import { defineComponent, onMounted, ref } from "vue";
-import ItemCard from "./ItemCard.vue";
+import ItemCard from "../components/ItemCard.vue";
 
 export default defineComponent({
   components: { ItemCard },
   setup() {
-    const flights = ref([]);
-    onMounted(() => {
-      getFlightsForSystem("OE").then(
-        data => (flights.value = data.flightPlans)
-      );
+    const flights = ref<Array<FlightPlan>>([]);
+    onMounted(async () => {
+      try {
+        flights.value = await getFlightsForSystem("OE");
+      } catch (error) {
+        console.log(error);
+      }
     });
     return { flights };
   }

@@ -52,16 +52,18 @@
 </template>
 
 <script lang="ts">
-import { IShip, PurchaseInformation } from "@/interfaces";
+import Ship from "@/interfaces/Ship";
 import { defineComponent, PropType } from "vue";
+
 export default defineComponent({
   components: {},
   emits: ["buyShip"],
   props: {
-    ship: { type: Object as PropType<IShip>, required: true }
+    ship: { type: Object as PropType<Ship>, required: true }
   },
   setup(props, { emit }) {
-    const handleBuy = (ship: PurchaseInformation) => {
+    //rewrite this methode with the ship interface
+    const handleBuy = (ship: Ship) => {
       emit("buyShip", ship);
     };
     const getIcon = (shipClass: string) => {
@@ -96,5 +98,8 @@ export default defineComponent({
   flex-direction: column;
   flex-grow: 1;
   margin-right: 20px;
+}
+input[type="button"] {
+  background: green;
 }
 </style>

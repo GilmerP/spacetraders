@@ -2,15 +2,17 @@
   <Banner :user="user" />
   <router-view v-if="user" />
   <router-view v-else @user-change="handleUserChange" />
+  <Message />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import useUser from "./Auth";
 import Banner from "./components/Banner.vue";
+import Message from "./components/Message.vue";
 
 export default defineComponent({
-  components: { Banner },
+  components: { Banner, Message },
   setup() {
     const { user } = useUser();
     return { user };
@@ -26,7 +28,7 @@ export default defineComponent({
 }
 #app {
   min-height: 100vh;
-  background: rgb(31, 31, 31);
+  background: #111111;
 }
 .container {
   padding: 10px;
@@ -36,12 +38,13 @@ export default defineComponent({
   align-items: stretch;
 }
 .item-card {
-  background: #969696;
+  background: #111;
   padding: 10px;
   margin: 10px;
   box-sizing: border-box;
   min-height: 150px;
   min-width: 300px;
+  border: 1px solid rgb(119, 119, 119);
   border-radius: 10px;
 }
 .item-card td:last-child {

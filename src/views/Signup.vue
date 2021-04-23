@@ -23,11 +23,14 @@ export default defineComponent({
     const { login } = useUser();
     const username = ref("");
 
-    const handleSignup = () => {
-      createNewUser(username.value).then(data => {
-        login(username.value, data.token);
+    const handleSignup = async () => {
+      try {
+        const token = await createNewUser(username.value);
+        login(username.value, token);
         router.push("/");
-      });
+      } catch (error) {
+        console.log(error.message);
+      }
     };
 
     return { username, handleSignup };

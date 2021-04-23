@@ -1,12 +1,12 @@
 import useUser from "./Auth";
-import {
-  IShip,
-  MarketplaceGood,
-  OrderedGood,
-  PurchaseInformation
-} from "./interfaces";
-const connectionString = "https://api.spacetraders.io";
+import Ship from "./interfaces/Ship";
+import Good from "./interfaces/Good";
+import Order from "./interfaces/Order";
+import Loan from "./interfaces/Loan";
+import CelestialBody from "./interfaces/CelestialBody";
+import FlightPlan from "./interfaces/FlightPlan";
 
+const connectionString = "https://api.spacetraders.io";
 const { user, token } = useUser();
 
 const getCurrentUser = async () => {
@@ -19,19 +19,21 @@ const getCurrentUser = async () => {
   return data;
 };
 
-const fetchShips = async (): Promise<Array<IShip> | string> => {
+const fetchShips = async (): Promise<Array<Ship>> => {
   const response = await fetch(`${connectionString}/game/ships`, {
     headers: {
       Authorization: `Bearer ${token.value}`
     }
   });
+
   const data = await response.json();
-  return data.error ? data.error.message : (data.ships as Array<IShip>);
+  if (data.error) {
+    throw Error(data.error.message);
+  }
+  return data.ships;
 };
 
-const buyShip = async (
-  purchaseInformation: PurchaseInformation
-): Promise<IShip | string> => {
+const buyShip = async (purchaseInformation: Ship): Promise<Ship> => {
   const response = await fetch(
     `${connectionString}/users/${user.value}/ships`,
     {
@@ -47,11 +49,15 @@ const buyShip = async (
       })
     }
   );
+
   const data = await response.json();
-  return data.error ? data.error.message : (data.ship as IShip);
+  if (!response.ok) {
+    throw Error(data.error.message);
+  }
+  return data.ship;
 };
 
-const fetchUserShips = async () => {
+const fetchUserShips = async (): Promise<Array<Ship>> => {
   const response = await fetch(
     `${connectionString}/users/${user.value}/ships`,
     {
@@ -61,12 +67,13 @@ const fetchUserShips = async () => {
     }
   );
   const data = await response.json();
-  return data;
+  if (!response.ok) {
+    throw Error(data.error.message);
+  }
+  return data.ships;
 };
 
-const getMarketplace = async (
-  location: string
-): Promise<Array<MarketplaceGood> | string> => {
+const getMarketplace = async (location: string): Promise<Array<Good>> => {
   const response = await fetch(
     `${connectionString}/game/locations/${location}/marketplace`,
     {
@@ -76,16 +83,18 @@ const getMarketplace = async (
     }
   );
   const data = await response.json();
-  return data.error
-    ? (data.error.message as string)
-    : (data.location.marketplace as Array<MarketplaceGood>);
+  if (!response.ok) {
+    throw Error(data.error.message);
+  }
+
+  return data.location.marketplace;
 };
 
 const placeOrder = async (
   shipID: string,
   goodToOrder: string,
   quantityToOrder: number
-): Promise<OrderedGood | string> => {
+): Promise<Order> => {
   const response = await fetch(
     `${connectionString}/users/${user.value}/purchase-orders`,
     {
@@ -102,17 +111,20 @@ const placeOrder = async (
       })
     }
   );
+
   const data = await response.json();
-  return data.error
-    ? (data.error.message as string)
-    : (data.order as OrderedGood);
+  if (!response.ok) {
+    throw Error(data.error.message);
+  }
+
+  return data.order;
 };
 
 const sellGood = async (
   shipID: string,
   goodToSell: string,
   quantityToSell: number
-): Promise<OrderedGood | string> => {
+): Promise<Order> => {
   const response = await fetch(
     `${connectionString}/users/${user.value}/sell-orders`,
     {
@@ -129,69 +141,117 @@ const sellGood = async (
       })
     }
   );
+
   const data = await response.json();
-  return data.error
-    ? (data.error.message as string)
-    : (data.order as OrderedGood);
+  if (!response.ok) {
+    throw Error(data.error.message);
+  }
+  return data.order;
 };
 
-const getLoans = async () => {
+const getLoans = async (): Promise<Array<Loan>> => {
   const response = await fetch(
     `${connectionString}/game/loans?token=${token.value}`
   );
-  return response.json();
+  const data = await response.json();
+  if (!response.ok) {
+    throw Error(data.error.message);
+  }
+  return data.loans;
 };
 
-const takeOutLoan = async (loanType: string) => {
-  return fetch(`${connectionString}/users/${user.value}/loans`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json, text/plain, */*",
-      Authorization: `Bearer ${token.value}`,
-      "Content-Type": "application/json;charset=UTF-8"
-    },
-    body: JSON.stringify({ type: loanType })
-  }).then(response => response.json());
+const takeOutLoan = async (loanType: string): Promise<void> => {
+  const response = await fetch(
+    `${connectionString}/users/${user.value}/loans`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token.value}`,
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      body: JSON.stringify({ type: loanType })
+    }
+  );
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw Error(data.error.message);
+  }
 };
 
-const createNewUser = async (username: string) => {
-  return fetch(`${connectionString}/users/${username}/token`, {
+const createNewUser = async (username: string): Promise<string> => {
+  const response = await fetch(`${connectionString}/users/${username}/token`, {
     method: "POST"
-  }).then(response => response.json());
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw Error(data.error.message);
+  }
+  return data.token;
 };
 
-const getPlanets = async (systemName: string) => {
-  return await fetch(
+const getCelestialBodys = async (
+  systemName: string
+): Promise<Array<CelestialBody>> => {
+  const response = await fetch(
     `${connectionString}/game/systems/${systemName}/locations`,
     {
       headers: {
         Authorization: `Bearer ${token.value}`
       }
     }
-  ).then(res => res.json());
+  );
+  const data = await response.json();
+  if (!response.ok) {
+    throw Error(data.error.message);
+  }
+  return data.locations;
 };
 
-const createFlightPlan = async (shipID: string, destination: string) => {
-  return fetch(`${connectionString}/users/${user.value}/flight-plans`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json, text/plain, */*",
-      Authorization: `Bearer ${token.value}`,
-      "Content-Type": "application/json;charset=UTF-8"
-    },
-    body: JSON.stringify({ shipId: shipID, destination: destination })
-  }).then(response => response.json());
+const createFlightPlan = async (
+  shipID: string,
+  destination: string
+): Promise<FlightPlan> => {
+  const response = await fetch(
+    `${connectionString}/users/${user.value}/flight-plans`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json, text/plain, */*",
+        Authorization: `Bearer ${token.value}`,
+        "Content-Type": "application/json;charset=UTF-8"
+      },
+      body: JSON.stringify({ shipId: shipID, destination: destination })
+    }
+  );
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw Error(data.error.message);
+  }
+  return data.flightPlan;
 };
 
-const getFlightsForSystem = async (systemName: string) => {
-  return await fetch(
+const getFlightsForSystem = async (
+  systemName: string
+): Promise<Array<FlightPlan>> => {
+  const response = await fetch(
     `${connectionString}/game/systems/${systemName}/flight-plans`,
     {
       headers: {
         Authorization: `Bearer ${token.value}`
       }
     }
-  ).then(res => res.json());
+  );
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw Error(data.error.message);
+  }
+  console.log(data);
+  return data.flightPlans;
 };
 
 export {
@@ -204,7 +264,7 @@ export {
   buyShip,
   createNewUser,
   placeOrder,
-  getPlanets,
+  getCelestialBodys,
   createFlightPlan,
   sellGood,
   getFlightsForSystem

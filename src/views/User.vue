@@ -50,7 +50,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { getCurrentUser } from "../api";
-import ItemCard from "./ItemCard.vue";
+import ItemCard from "../components/ItemCard.vue";
 
 export default defineComponent({
   components: { ItemCard },

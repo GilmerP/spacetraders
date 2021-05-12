@@ -1,48 +1,37 @@
 <template>
   <div v-if="isLoaded" class="container">
-    <item-card
-      :header="thisuser.username.toUpperCase()"
-      :iconName="'user-astronaut'"
-      :content="[
-        { name: 'credits', value: Number(thisuser.credits).toLocaleString() },
-        { name: 'token', value: token }
-      ]"
-    />
-    <item-card
-      :header="'Active Loan'"
-      :iconName="'coins'"
-      :content="
-        thisuser.loans.length > 0
-          ? [
-              {
-                name: 'Amount',
-                value: Number(
-                  thisuser.loans[0].repaymentAmount
-                ).toLocaleString()
-              },
-              {
-                name: 'Due',
-                value: new Date(thisuser.loans[0].due).toLocaleString()
-              }
-            ]
-          : [{ name: 'No loan taken' }]
-      "
-    />
+    <div class="item-card">
+      <div class="item-card_header">
+        <h2>{{ thisuser.username }}</h2>
+        <fa-icon class="item-card_header_icon" icon="user-astronaut" />
+      </div>
+      <table class="item-card_details">
+        <tr>
+          <td>Token:</td>
+          <td>{{ token }}</td>
+        </tr>
+        <tr>
+          <td>Loans:</td>
+          <td v-if="thisuser.loans.length">
+            {{
+              `${Number(
+                thisuser.loans[0].repaymentAmount
+              ).toLocaleString()} Credits, due ${new Date(
+                thisuser.loans[0].due
+              ).toLocaleString()}`
+            }}
+          </td>
+          <td v-else>No loan taken</td>
+        </tr>
+      </table>
+    </div>
   </div>
-  <div class="container">
-    <item-card
+  <div class="container flex-column" v-if="isLoaded && thisuser.ships.length">
+    <h2>Your Fleet</h2>
+    <TheShip
       v-for="(ship, index) in thisuser.ships"
       :key="index"
-      :header="`Ship ${index + 1}`"
-      :content="[
-        { name: 'ID', value: ship.id },
-        { name: 'class', value: ship.class },
-        { name: 'location', value: ship.location || 'travelling...' },
-        {
-          name: 'space available',
-          value: ship.spaceAvailable + '/' + ship.maxCargo
-        }
-      ]"
+      :ship="ship"
     />
   </div>
 </template>
@@ -50,13 +39,13 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { getCurrentUser } from "../api";
-import ItemCard from "../components/ItemCard.vue";
+import TheShip from "../components/TheShip.vue";
 
 export default defineComponent({
-  components: { ItemCard },
+  components: { TheShip },
   setup() {
     const thisuser = ref({});
-    const isLoaded = ref(false);
+    const isLoaded = ref<boolean>(false);
     const token = localStorage.getItem("token");
 
     onMounted(() => {

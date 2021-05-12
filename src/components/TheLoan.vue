@@ -1,15 +1,23 @@
 <template>
-  <div>
-    <item-card
-      :content="[
-        { name: 'Amount:', value: Number(loan.amount).toLocaleString() },
-        { name: 'Collateral Required:', value: loan.collateralRequired },
-        { name: 'Rate:', value: loan.rate + '%' },
-        { name: 'Term in Days:', value: loan.termInDays },
-        { name: 'Type:', value: loan.type }
-      ]"
-      :inputs="loan.buttons"
-    />
+  <div class="item-card">
+    <table class="item-card_details">
+      <tr>
+        <td>Amount:</td>
+        <td>{{ Number(loan.amount).toLocaleString() }}</td>
+      </tr>
+      <tr>
+        <td>Rate:</td>
+        <td>{{ loan.rate + "%" }}</td>
+      </tr>
+      <tr>
+        <td>Due:</td>
+        <td>{{ loan.termInDays + " days" }}</td>
+      </tr>
+      <tr>
+        <td>Type:</td>
+        <td>{{ loan.type }}</td>
+      </tr>
+    </table>
   </div>
 </template>
 
@@ -21,7 +29,7 @@ export default defineComponent({
   props: {
     loan: Object
   },
-  components: { ItemCard },
+  components: {},
   setup() {
     return {};
   }

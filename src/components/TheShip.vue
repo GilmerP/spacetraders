@@ -61,11 +61,12 @@ export default defineComponent({
   props: {
     ship: { type: Object as PropType<Ship>, required: true }
   },
+
   setup(props, { emit }) {
-    //rewrite this methode with the ship interface
     const handleBuy = (ship: Ship) => {
       emit("buyShip", ship);
     };
+
     const getIcon = (shipClass: string) => {
       switch (shipClass) {
         case "MK-I":
@@ -78,6 +79,7 @@ export default defineComponent({
           return "";
       }
     };
+
     const icon = getIcon(props.ship.class);
     return { icon, handleBuy };
   }

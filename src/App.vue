@@ -35,7 +35,10 @@ export default defineComponent({
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: stretch;
+  align-items: center;
+}
+.flex-column {
+  flex-direction: column;
 }
 .item-card {
   background: #111;

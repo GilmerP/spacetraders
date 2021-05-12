@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" v-if="ships.length">
     <svg width="1000" height="1000">
       <!-- For each object a circle (PLANTES, MOONS, etc.) -->
       <circle
@@ -48,6 +48,15 @@
       />
     </div>
   </div>
+  <div class="container" v-else-if="loading">
+    <h1>Loading...</h1>
+  </div>
+  <div class="container" v-else>
+    <h1 style="text-align:">
+      Could not get the Map. <br />
+      Make sure you have a ship that is currently not transitioning
+    </h1>
+  </div>
 </template>
 
 <script lang="ts">
@@ -59,6 +68,7 @@ import { defineComponent, onMounted, ref } from "vue";
 
 export default defineComponent({
   setup() {
+    const loading = ref<boolean>(true);
     const locations = ref<Array<CelestialBody>>([]);
 
     const selectedObject = ref({} as CelestialBody);
@@ -88,16 +98,20 @@ export default defineComponent({
     onMounted(async () => {
       try {
         const allShips = await fetchUserShips();
-        ships.value = allShips.filter(x => x.location);
-        selectedShip.value = ships.value[0];
+        if (allShips.length) {
+          ships.value = allShips.filter(x => x.location);
+          selectedShip.value = ships.value[0];
 
-        //first section of the ship location is the systemname.
-        let shipLocation = selectedShip.value.location as string;
-        shipLocation = shipLocation.split("-")[0];
-        locations.value = await getCelestialBodys(shipLocation);
+          //first section of the ship location is the systemname.
+          let shipLocation = selectedShip.value.location as string;
+          shipLocation = shipLocation.split("-")[0];
+          locations.value = await getCelestialBodys(shipLocation);
+        }
       } catch (error) {
         messageText.value = error;
         messageVisible.value = true;
+      } finally {
+        loading.value = false;
       }
     });
 
@@ -107,7 +121,8 @@ export default defineComponent({
       selectedObject,
       ships,
       handleTravel,
-      selectedShip
+      selectedShip,
+      loading
     };
   }
 });

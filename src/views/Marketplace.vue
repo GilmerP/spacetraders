@@ -24,8 +24,14 @@
       @sellGood="handleSell"
     />
   </div>
-  <div class="container" v-else>
+  <div class="container" v-else-if="loading">
     <h1>Loading...</h1>
+  </div>
+  <div class="container" v-else>
+    <h1 style="text-align: center">
+      Could not get Marketplace data. <br />
+      Make sure you have a ship that is not travelling right now...
+    </h1>
   </div>
 </template>
 
@@ -42,6 +48,7 @@ import Ship from "@/interfaces/Ship";
 export default defineComponent({
   components: { BuyGood, SellGood },
   setup() {
+    const loading = ref<boolean>(true);
     const ships = ref<Array<Ship>>([]);
     const selectedShip = ref<Ship>();
     const cargo = computed(() => selectedShip.value?.cargo);
@@ -54,7 +61,10 @@ export default defineComponent({
         ships.value = await fetchUserShips();
         selectedShip.value = ships.value[0];
       } catch (error) {
-        console.log(error.message);
+        messageText.value = error;
+        messageVisible.value = true;
+      } finally {
+        loading.value = false;
       }
     };
 
@@ -140,7 +150,8 @@ export default defineComponent({
       handleChange,
       handleBuy,
       cargo,
-      handleSell
+      handleSell,
+      loading
     };
   }
 });

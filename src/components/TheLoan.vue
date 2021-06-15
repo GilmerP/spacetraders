@@ -23,7 +23,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import ItemCard from "./ItemCard.vue";
 
 export default defineComponent({
   props: {

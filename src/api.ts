@@ -7,7 +7,7 @@ import CelestialBody from "./interfaces/CelestialBody";
 import FlightPlan from "./interfaces/FlightPlan";
 
 const connectionString = "https://api.spacetraders.io";
-const { user, token } = useUser();
+const { user, token, logout } = useUser();
 
 const getCurrentUser = async () => {
   const res = await fetch(`${connectionString}/users/${user.value}`, {
@@ -16,6 +16,10 @@ const getCurrentUser = async () => {
     }
   });
   const data = await res.json();
+  if (!res.ok) {
+    logout();
+    throw new Error(data.error.message);
+  }
   return data;
 };
 

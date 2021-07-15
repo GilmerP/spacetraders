@@ -40,13 +40,13 @@
           </tr>
         </table>
       </div>
-      <input
-        type="button"
-        value="Buy"
+      <button
         @click="
           () => handleBuy({ location: location.location, type: ship.type })
         "
-      />
+      >
+        Buy
+      </button>
     </div>
   </div>
 </template>
@@ -73,10 +73,8 @@ export default defineComponent({
           return "rocket";
         case "MK-II":
           return "space-shuttle";
-        case "MK-III":
-          return "fighter-jet";
         default:
-          return "";
+          return "fighter-jet";
       }
     };
 
@@ -101,7 +99,7 @@ export default defineComponent({
   flex-grow: 1;
   margin-right: 20px;
 }
-input[type="button"] {
+button {
   background: green;
 }
 </style>

@@ -39,20 +39,28 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { getCurrentUser } from "../api";
+import useError from "../Message";
 import TheShip from "../components/TheShip.vue";
+import router from "../router/index";
 
 export default defineComponent({
   components: { TheShip },
   setup() {
     const thisuser = ref({});
     const isLoaded = ref<boolean>(false);
+    const { messageText, messageVisible } = useError();
     const token = localStorage.getItem("token");
 
-    onMounted(() => {
-      getCurrentUser().then(data => {
+    onMounted(async () => {
+      try {
+        const data = await getCurrentUser();
         thisuser.value = data.user;
         isLoaded.value = true;
-      });
+      } catch (error) {
+        router.push("/login");
+        messageText.value = error;
+        messageVisible.value = true;
+      }
     });
 
     return {

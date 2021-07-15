@@ -18,20 +18,25 @@
         <td>{{ loan.type }}</td>
       </tr>
     </table>
+
+    <button @click="handleClick">Take out</button>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import ItemCard from "./ItemCard.vue";
 
 export default defineComponent({
   props: {
     loan: Object
   },
+  emits: ["takeOutLoan"],
   components: {},
-  setup() {
-    return {};
+  setup(props, { emit }) {
+    const handleClick = () => {
+      emit("takeOutLoan", props.loan);
+    };
+    return { handleClick };
   }
 });
 </script>

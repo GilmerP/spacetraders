@@ -66,15 +66,16 @@ export default defineComponent({
 .item-card_details {
   width: 100%;
 }
-.item-card input[type="button"] {
+.item-card button {
   background: black;
-  border: none;
+  border: white 1px solid;
   border-radius: 5px;
   padding: 10px 15px;
   min-width: 100px;
 }
-.item-card input[type="button"]:hover {
+.item-card button:hover {
   opacity: 0.8;
+  cursor: pointer;
 }
 .item-card input[type="number"] {
   box-sizing: border-box;

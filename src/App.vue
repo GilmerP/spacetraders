@@ -1,88 +1,139 @@
 <template>
-  <Banner :user="user" />
-  <router-view v-if="user" />
-  <router-view v-else @user-change="handleUserChange" />
+  <Banner />
+  <Navigation />
+  <router-view />
   <Message />
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import useUser from "./Auth";
+import { fetchUserShips } from "@/api";
+import { store } from "./store/index";
 import Banner from "./components/Banner.vue";
 import Message from "./components/Message.vue";
+import Navigation from "./components/Navigation.vue";
 
 export default defineComponent({
-  components: { Banner, Message },
-  setup() {
-    const { user } = useUser();
-    return { user };
+  components: { Banner, Message, Navigation },
+
+  watch: {
+    async player() {
+      store.state.userShips = await fetchUserShips();
+    }
+  },
+
+  async beforeCreate() {
+    try {
+      await store.init();
+      // let timesUpdated = 1;
+      // setInterval(() => {
+      //   store.update();
+      //   console.log("update " + timesUpdated);
+      //   timesUpdated++;
+      // }, 60000);
+    } catch (error) {
+      console.log(error);
+    }
   }
 });
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Orbitron&display=swap");
+
 * {
+  box-sizing: border-box;
   margin: 0;
+  font-family: "Orbitron", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+span,
+p,
+strong,
+b,
+u,
+a,
+li,
+button,
+td {
   color: white;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
+
 #app {
-  min-height: 100vh;
-  background: #111111;
+  height: 100vh;
+  background-image: url("./assets/app-bg.jpg");
+  background-size: cover;
+  background-position: 50% 0%;
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  grid-template-rows: 130px 1fr;
 }
+
+.primary-color {
+  color: #ff4400;
+}
+
 .container {
-  padding: 10px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
+  margin: 20px;
+  display: grid;
+  grid-template: 1fr 1fr / 1fr 1fr;
+  gap: 40px;
+  overflow: auto;
 }
+
 .flex-column {
   flex-direction: column;
 }
+
 .item-card {
-  background: #111;
-  padding: 10px;
-  margin: 10px;
-  box-sizing: border-box;
-  min-height: 150px;
-  min-width: 300px;
-  border: 1px solid rgb(119, 119, 119);
+  max-width: 500px;
+  padding: 30px 20px;
+  margin-top: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 10px;
 }
-.item-card td:last-child {
-  text-align: end;
+
+.item-card--header {
+  text-align: center;
+  margin-bottom: 20px;
 }
-.item-card_header {
-  display: flex;
-  align-items: center;
-  padding-bottom: 10px;
-  border-bottom: 1px solid white;
-}
-.item-card_header_icon {
-  font-size: 2em;
-  margin-left: auto;
-}
+
 .item-card_details {
   width: 100%;
 }
-.item-card button {
-  background: black;
-  border: white 1px solid;
-  border-radius: 5px;
-  padding: 10px 15px;
-  min-width: 100px;
+
+td {
+  width: 50%;
 }
-.item-card button:hover {
-  opacity: 0.8;
-  cursor: pointer;
+
+td,
+table {
+  padding: 0;
+  border-spacing: 0px;
 }
-.item-card input[type="number"] {
-  box-sizing: border-box;
-  background: black;
+
+button,
+.btn {
+  display: block;
+  text-decoration: none;
+  text-align: center;
+  font-size: 13px;
+  background: #ff4400;
   border: none;
   border-radius: 5px;
-  max-width: 100px;
-  text-align: center;
+  padding: 10px 15px;
+  margin: auto;
+  margin-top: 20px;
+  min-width: 100px;
+}
+
+button:hover {
+  cursor: pointer;
+  background: hsl(16, 100%, 40%);
 }
 </style>

@@ -7,6 +7,7 @@ export default interface IShip {
   maxCargo: number;
   type: string;
   id: string;
+  flightPlanId?: string;
   location: string;
   purchaseLocations: PurchaseLocation[];
   cargo: Array<Cargo>;

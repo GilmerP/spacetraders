@@ -1,32 +1,32 @@
-import useUser from "./Auth";
+import { store } from "./store";
+
 import Ship from "./interfaces/Ship";
 import Good from "./interfaces/Good";
 import Order from "./interfaces/Order";
 import Loan from "./interfaces/Loan";
 import CelestialBody from "./interfaces/CelestialBody";
 import FlightPlan from "./interfaces/FlightPlan";
+import User from "./interfaces/User";
 
 const connectionString = "https://api.spacetraders.io";
-const { user, token, logout } = useUser();
 
-const getCurrentUser = async () => {
-  const res = await fetch(`${connectionString}/users/${user.value}`, {
+const getUser = async (): Promise<User> => {
+  const res = await fetch(`${connectionString}/users/${store.state.username}`, {
     headers: {
-      Authorization: `Bearer ${token.value}`
+      Authorization: `Bearer ${store.state.token}`
     }
   });
   const data = await res.json();
   if (!res.ok) {
-    logout();
     throw new Error(data.error.message);
   }
-  return data;
+  return data.user;
 };
 
 const fetchShips = async (): Promise<Array<Ship>> => {
   const response = await fetch(`${connectionString}/game/ships`, {
     headers: {
-      Authorization: `Bearer ${token.value}`
+      Authorization: `Bearer ${store.state.token}`
     }
   });
 
@@ -39,12 +39,12 @@ const fetchShips = async (): Promise<Array<Ship>> => {
 
 const buyShip = async (purchaseInformation: Ship): Promise<Ship> => {
   const response = await fetch(
-    `${connectionString}/users/${user.value}/ships`,
+    `${connectionString}/users/${store.state.username}/ships`,
     {
       method: "POST",
       headers: {
         Accept: "application/json, text/plain, */*",
-        Authorization: `Bearer ${token.value}`,
+        Authorization: `Bearer ${store.state.token}`,
         "Content-Type": "application/json;charset=UTF-8"
       },
       body: JSON.stringify({
@@ -63,10 +63,10 @@ const buyShip = async (purchaseInformation: Ship): Promise<Ship> => {
 
 const fetchUserShips = async (): Promise<Array<Ship>> => {
   const response = await fetch(
-    `${connectionString}/users/${user.value}/ships`,
+    `${connectionString}/users/${store.state.username}/ships`,
     {
       headers: {
-        Authorization: `Bearer ${token.value}`
+        Authorization: `Bearer ${store.state.token}`
       }
     }
   );
@@ -82,7 +82,7 @@ const getMarketplace = async (location: string): Promise<Array<Good>> => {
     `${connectionString}/game/locations/${location}/marketplace`,
     {
       headers: {
-        Authorization: `Bearer ${token.value}`
+        Authorization: `Bearer ${store.state.token}`
       }
     }
   );
@@ -100,12 +100,12 @@ const placeOrder = async (
   quantityToOrder: number
 ): Promise<Order> => {
   const response = await fetch(
-    `${connectionString}/users/${user.value}/purchase-orders`,
+    `${connectionString}/users/${store.state.username}/purchase-orders`,
     {
       method: "POST",
       headers: {
         Accept: "application/json, text/plain, */*",
-        Authorization: `Bearer ${token.value}`,
+        Authorization: `Bearer ${store.state.token}`,
         "Content-Type": "application/json;charset=UTF-8"
       },
       body: JSON.stringify({
@@ -130,12 +130,12 @@ const sellGood = async (
   quantityToSell: number
 ): Promise<Order> => {
   const response = await fetch(
-    `${connectionString}/users/${user.value}/sell-orders`,
+    `${connectionString}/users/${store.state.username}/sell-orders`,
     {
       method: "POST",
       headers: {
         Accept: "application/json, text/plain, */*",
-        Authorization: `Bearer ${token.value}`,
+        Authorization: `Bearer ${store.state.token}`,
         "Content-Type": "application/json;charset=UTF-8"
       },
       body: JSON.stringify({
@@ -155,7 +155,7 @@ const sellGood = async (
 
 const getLoans = async (): Promise<Array<Loan>> => {
   const response = await fetch(
-    `${connectionString}/game/loans?token=${token.value}`
+    `${connectionString}/game/loans?token=${store.state.token}`
   );
   const data = await response.json();
   if (!response.ok) {
@@ -166,12 +166,12 @@ const getLoans = async (): Promise<Array<Loan>> => {
 
 const takeOutLoan = async (loanType: string): Promise<void> => {
   const response = await fetch(
-    `${connectionString}/users/${user.value}/loans`,
+    `${connectionString}/users/${store.state.username}/loans`,
     {
       method: "POST",
       headers: {
         Accept: "application/json, text/plain, */*",
-        Authorization: `Bearer ${token.value}`,
+        Authorization: `Bearer ${store.state.token}`,
         "Content-Type": "application/json;charset=UTF-8"
       },
       body: JSON.stringify({ type: loanType })
@@ -203,7 +203,7 @@ const getCelestialBodys = async (
     `${connectionString}/game/systems/${systemName}/locations`,
     {
       headers: {
-        Authorization: `Bearer ${token.value}`
+        Authorization: `Bearer ${store.state.token}`
       }
     }
   );
@@ -219,12 +219,12 @@ const createFlightPlan = async (
   destination: string
 ): Promise<FlightPlan> => {
   const response = await fetch(
-    `${connectionString}/users/${user.value}/flight-plans`,
+    `${connectionString}/users/${store.state.username}/flight-plans`,
     {
       method: "POST",
       headers: {
         Accept: "application/json, text/plain, */*",
-        Authorization: `Bearer ${token.value}`,
+        Authorization: `Bearer ${store.state.token}`,
         "Content-Type": "application/json;charset=UTF-8"
       },
       body: JSON.stringify({ shipId: shipID, destination: destination })
@@ -245,7 +245,7 @@ const getFlightsForSystem = async (
     `${connectionString}/game/systems/${systemName}/flight-plans`,
     {
       headers: {
-        Authorization: `Bearer ${token.value}`
+        Authorization: `Bearer ${store.state.token}`
       }
     }
   );
@@ -254,8 +254,24 @@ const getFlightsForSystem = async (
   if (!response.ok) {
     throw Error(data.error.message);
   }
-  console.log(data);
   return data.flightPlans;
+};
+
+const getFlightById = async (flightPlanId: string): Promise<FlightPlan> => {
+  const response = await fetch(
+    `${connectionString}/my/flight-plans/${flightPlanId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${store.state.token}`
+      }
+    }
+  );
+
+  const data = await response.json();
+  if (!response.ok) {
+    throw Error(data.error.message);
+  }
+  return data.flightPlan;
 };
 
 export {
@@ -264,12 +280,13 @@ export {
   getLoans,
   takeOutLoan,
   getMarketplace,
-  getCurrentUser,
+  getUser,
   buyShip,
   createNewUser,
   placeOrder,
   getCelestialBodys,
   createFlightPlan,
   sellGood,
-  getFlightsForSystem
+  getFlightsForSystem,
+  getFlightById
 };

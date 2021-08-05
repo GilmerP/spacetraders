@@ -1,12 +1,11 @@
 <template>
   <div class="item-card">
-    <div class="item-card_header">
-      <h2>{{ good.good }}</h2>
-      <fa-icon class="item-card_header_icon" v-if="icon" :icon="icon" />
+    <div class="item-card--header">
+      <h4>{{ good.good }}</h4>
     </div>
     <table class="item-card_details">
       <tr>
-        <td>Quantity</td>
+        <td>Quantity:</td>
         <td>{{ good.quantity }}</td>
       </tr>
       <tr>

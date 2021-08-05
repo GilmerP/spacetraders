@@ -1,18 +1,16 @@
 import { createRouter, createWebHistory, Router } from "vue-router";
-import User from "../views/User.vue";
-import Loans from "../views/Loans.vue";
+import Home from "../views/Home.vue";
 import Ships from "../views/Ships.vue";
-import Marketplace from "../views/Marketplace.vue";
-import Map from "../views/Map.vue";
-import Flights from "../views/Flights.vue";
+import Trade from "../views/Trade.vue";
 import Login from "../views/Login.vue";
 import Signup from "../views/Signup.vue";
+import Map from "../views/Map.vue";
 
 const routes = [
   {
     path: "/",
     name: "Home",
-    component: User
+    component: Home
   },
   {
     path: "/login",
@@ -25,29 +23,20 @@ const routes = [
     component: Signup
   },
   {
-    path: "/loans",
-    name: "Loans",
-    component: Loans
-  },
-  {
     path: "/ships",
     name: "Ships",
     component: Ships
   },
   {
-    path: "/market",
-    name: "Marketplace",
-    component: Marketplace
+    path: "/trade/:shipId",
+    name: "Trade",
+    props: true,
+    component: Trade
   },
   {
     path: "/map",
     name: "Map",
     component: Map
-  },
-  {
-    path: "/flights",
-    name: "Flights",
-    component: Flights
   }
 ];
 

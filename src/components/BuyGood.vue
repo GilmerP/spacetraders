@@ -1,8 +1,7 @@
 <template>
   <div class="item-card">
-    <div class="item-card_header">
-      <h2>{{ good.symbol }}</h2>
-      <fa-icon class="item-card_header_icon" v-if="icon" :icon="icon" />
+    <div class="item-card--header">
+      <h4>{{ good.symbol }}</h4>
     </div>
     <table class="item-card_details">
       <tr>

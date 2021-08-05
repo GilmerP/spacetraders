@@ -60,7 +60,8 @@
 </template>
 
 <script lang="ts">
-import { getCelestialBodys, fetchUserShips, createFlightPlan } from "@/api";
+import { getCelestialBodys, createFlightPlan } from "@/api";
+import { store } from "@/store/index";
 import useMessage from "../Message";
 import Ship from "@/interfaces/Ship";
 import CelestialBody from "@/interfaces/CelestialBody";
@@ -97,7 +98,7 @@ export default defineComponent({
     const selectedShip = ref({} as Ship);
     onMounted(async () => {
       try {
-        const allShips = await fetchUserShips();
+        const allShips = store.state.userShips;
         if (allShips.length) {
           ships.value = allShips.filter(x => x.location);
           selectedShip.value = ships.value[0];

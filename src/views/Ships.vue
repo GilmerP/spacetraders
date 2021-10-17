@@ -1,11 +1,6 @@
 <template>
   <div v-if="ships" class="container">
-    <TheShip
-      @buyShip="handleBuyShip"
-      v-for="(ship, index) in ships"
-      :key="index"
-      :ship="ship"
-    />
+    <TheShip @buyShip="handleBuyShip" v-for="(ship, index) in ships" :key="index" :ship="ship" />
   </div>
   <div class="container" v-else>
     <h1>Loading...</h1>
@@ -26,13 +21,13 @@ export default defineComponent({
 
     const { messageText, messageVisible } = useMessage();
 
-    const handleBuyShip = async (shipToBuy: Ship) => {
+    const handleBuyShip = async (location: string, type: string) => {
+      console.log({ location, type });
       try {
-        await buyShip(shipToBuy);
-        (messageText.value = "You just bought a spaceship"),
-          (messageVisible.value = true);
+        await buyShip(location, type);
+        (messageText.value = "You just bought a spaceship"), (messageVisible.value = true);
       } catch (error) {
-        (messageText.value = error.message), (messageVisible.value = true);
+        (messageText.value = (error as Error).message), (messageVisible.value = true);
       }
     };
 

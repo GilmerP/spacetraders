@@ -3,7 +3,7 @@
     <h3 class="item-card--header">
       {{ ship.manufacturer + " " + ship.class }}
     </h3>
-    <div class="ship-details">
+    <div v-if="!purchaseLocationsVisible" class="ship-details">
       <img src="../assets/Spaceship_1.png" alt="spaceship" />
       <table class="item-card_details">
         <tr>
@@ -32,6 +32,24 @@
         </tr>
       </table>
     </div>
+    <table class="purchaseLocations" v-else>
+      <tr>
+        <th>System</th>
+        <th>Location</th>
+        <th>Price</th>
+      </tr>
+      <tr
+        @click="() => buy(location.location)"
+        v-for="location in ship.purchaseLocations"
+        :key="location"
+        class="location"
+      >
+        <td>{{ location.system }}</td>
+        <td>{{ location.location }}</td>
+        <td>{{ location.price }}</td>
+      </tr>
+    </table>
+
     <div v-if="ship.location" class="button-container">
       <router-link class="btn" :to="'/trade/' + ship.id">Trade</router-link>
       <router-link class="btn" to="/Map">Travel</router-link>
@@ -42,7 +60,11 @@
       </p>
     </div>
     <div v-else>
-      <button>Buy</button>
+      <button
+        @click="() => (purchaseLocationsVisible = !purchaseLocationsVisible)"
+      >
+        {{ purchaseLocationsVisible ? "Back" : "Buy" }}
+      </button>
     </div>
   </div>
 </template>
@@ -62,8 +84,14 @@ export default defineComponent({
   },
   data() {
     return {
-      time: 100
+      time: 100,
+      purchaseLocationsVisible: false
     };
+  },
+  methods: {
+    buy(location: string) {
+      this.$emit("buyShip", location, this.$props.ship.type);
+    }
   },
   async mounted() {
     if (this.ship.flightPlanId) {
@@ -88,13 +116,16 @@ export default defineComponent({
   display: flex;
 }
 table {
+  color: white;
   width: 100%;
 }
 tr {
   display: flex;
   margin-bottom: 10px;
 }
-td {
+td,
+th {
+  text-align: left;
   flex: 1;
 }
 img {
@@ -104,18 +135,11 @@ img {
   display: flex;
   justify-content: space-evenly;
 }
-.purchase-location {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px 0;
-  margin: 5px 0;
-  border-top: 1px solid white;
+.purchaseLocations tr.location {
+  padding: 5px;
 }
-.purchase-location_details {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  margin-right: 20px;
+.purchaseLocations tr.location:hover {
+  background-color: rgb(0, 0, 0, 0.3);
+  cursor: pointer;
 }
 </style>

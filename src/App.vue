@@ -79,7 +79,9 @@ td {
 }
 
 .container {
-  margin: 20px;
+  margin: 10px;
+  padding: 10px;
+  position: relative;
   display: grid;
   grid-template: 1fr 1fr / 1fr 1fr;
   gap: 40px;

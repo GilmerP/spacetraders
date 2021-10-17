@@ -11,4 +11,6 @@ export default interface IShip {
   location: string;
   purchaseLocations: PurchaseLocation[];
   cargo: Array<Cargo>;
+  x?: number;
+  y?: number;
 }

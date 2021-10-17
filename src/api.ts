@@ -13,7 +13,9 @@ const connectionString = "https://api.spacetraders.io";
 
 async function request(request: RequestInfo) {
   const response = await fetch(request);
-  return await response.json();
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error.message);
+  return data;
 }
 
 async function get(
@@ -54,12 +56,12 @@ export const fetchShips = async (): Promise<Array<Ship>> => {
   return data.ships;
 };
 
-export const buyShip = async (purchaseInformation: Ship): Promise<Ship> => {
+export const buyShip = async (location: string, type: string): Promise<Ship> => {
   const data = await post(
     `users/${store.state.username}/ships`,
     JSON.stringify({
-      location: purchaseInformation.location,
-      type: purchaseInformation.type
+      location: location,
+      type: type
     })
   );
   return data.ship;
@@ -70,18 +72,12 @@ export const fetchUserShips = async (): Promise<Array<Ship>> => {
   return data.ships;
 };
 
-export const getMarketplace = async (
-  location: string
-): Promise<Array<Good>> => {
+export const getMarketplace = async (location: string): Promise<Array<Good>> => {
   const data = await get(`game/locations/${location}/marketplace`);
   return data.location.marketplace;
 };
 
-export const placeOrder = async (
-  shipID: string,
-  goodToOrder: string,
-  quantityToOrder: number
-): Promise<Order> => {
+export const placeOrder = async (shipID: string, goodToOrder: string, quantityToOrder: number): Promise<Order> => {
   const data = await post(
     `users/${store.state.username}/purchase-orders`,
     JSON.stringify({
@@ -94,11 +90,7 @@ export const placeOrder = async (
   return data.order;
 };
 
-export const sellGood = async (
-  shipID: string,
-  goodToSell: string,
-  quantityToSell: number
-): Promise<Order> => {
+export const sellGood = async (shipID: string, goodToSell: string, quantityToSell: number): Promise<Order> => {
   const data = await post(
     `users/${store.state.username}/sell-orders`,
     JSON.stringify({
@@ -116,10 +108,7 @@ export const getLoans = async (): Promise<Array<Loan>> => {
 };
 
 export const takeOutLoan = async (loanType: string): Promise<void> => {
-  await post(
-    `users/${store.state.username}/loans`,
-    JSON.stringify({ type: loanType })
-  );
+  await post(`users/${store.state.username}/loans`, JSON.stringify({ type: loanType }));
 };
 
 export const createNewUser = async (username: string): Promise<string> => {
@@ -134,17 +123,12 @@ export const createNewUser = async (username: string): Promise<string> => {
   return data.token;
 };
 
-export const getCelestialBodys = async (
-  systemName: string
-): Promise<Array<CelestialBody>> => {
+export const getCelestialBodys = async (systemName: string): Promise<Array<CelestialBody>> => {
   const data = await get(`game/systems/${systemName}/locations`);
   return data.locations;
 };
 
-export const createFlightPlan = async (
-  shipID: string,
-  destination: string
-): Promise<FlightPlan> => {
+export const createFlightPlan = async (shipID: string, destination: string): Promise<FlightPlan> => {
   const data = await post(
     `users/${store.state.username}/flight-plans`,
     JSON.stringify({ shipId: shipID, destination: destination })
@@ -152,9 +136,7 @@ export const createFlightPlan = async (
   return data.flightPlan;
 };
 
-export const getFlightById = async (
-  flightPlanId: string
-): Promise<FlightPlan> => {
+export const getFlightById = async (flightPlanId: string): Promise<FlightPlan> => {
   const data = await get(`my/flight-plans/${flightPlanId}`);
   return data.flightPlan;
 };

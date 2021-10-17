@@ -92,13 +92,10 @@ export default defineComponent({
       const locationBox = SvgHelper.getBoxFromSvg(end);
       const locationCenter = SvgHelper.getCenterOfBox(locationBox);
 
-      const travelLine = SvgHelper.drawLine(
-        shipCenter.x,
-        shipCenter.y,
-        locationCenter.x,
-        locationCenter.y,
-        "travelPath"
-      );
+      document.getElementById("travelPath")?.remove();
+      const travelLine = SvgHelper.drawLine(shipCenter.x, shipCenter.y, locationCenter.x, locationCenter.y);
+
+      (travelLine as Element).id = "travelPath";
       (document.getElementById("map") as HTMLElement).append(travelLine);
     }
 
@@ -115,7 +112,32 @@ export default defineComponent({
 
     const selectedObject = ref({} as CelestialBody);
     const selectedShip = ref({} as Ship);
+
     const flightPlans = computed(() => store.state.userShips.filter(x => x.flightPlanId).map(x => x.flightPlanId));
+    watch(flightPlans, () => {
+      const currentLines = document.getElementsByClassName("flightLine");
+      for (let index = 0; index < currentLines.length; index++) {
+        const element = currentLines[index];
+        element.remove();
+      }
+
+      flightPlans.value.forEach(flightId => {
+        getFlightById(flightId as string).then(flight => {
+          const departureBox = SvgHelper.getBoxFromSvg(flight.departure);
+          const destinationBox = SvgHelper.getBoxFromSvg(flight.destination);
+          const departureCenter = SvgHelper.getCenterOfBox(departureBox);
+          const destinationCenter = SvgHelper.getCenterOfBox(destinationBox);
+          const flightLine = SvgHelper.drawLine(
+            departureCenter.x,
+            departureCenter.y,
+            destinationCenter.x,
+            destinationCenter.y
+          );
+          flightLine.classList.add("flightLine");
+          document.getElementById("map")?.append(flightLine);
+        });
+      });
+    });
 
     function handleLocationSelection(location: CelestialBody, event: MouseEvent) {
       console.log(flightPlans.value);
@@ -159,6 +181,7 @@ export default defineComponent({
     });
 
     onMounted(() => {
+      console.log(flightPlans);
       getLocations();
       const shipsTravelling = store.state.userShips?.filter(x => x.flightPlanId);
       if (shipsTravelling.length > 0) {
@@ -236,6 +259,9 @@ label {
   stroke: white;
   stroke-dasharray: 5;
   animation: dash 20s linear infinite reverse;
+}
+.flightLine {
+  stroke: red;
 }
 .location-info {
   position: absolute;

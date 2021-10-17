@@ -2,10 +2,8 @@ export default class SvgHelper {
   /**
    * draws a line between the given coordinates
    */
-  static drawLine(x1: number, y1: number, x2: number, y2: number, id = "") {
-    let newLine = (document.getElementById("travelPath") as Element) as SVGLineElement;
-    if (!newLine) newLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    newLine.setAttribute("id", id);
+  static drawLine(x1: number, y1: number, x2: number, y2: number) {
+    const newLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
     newLine.setAttribute("x1", String(x1));
     newLine.setAttribute("y1", String(y1));
     newLine.setAttribute("x2", String(x2));

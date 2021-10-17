@@ -55,14 +55,10 @@
       <router-link class="btn" to="/Map">Travel</router-link>
     </div>
     <div v-else-if="ship.id">
-      <p style="text-align: center;">
-        Ship is travelling for {{ time }} more seconds
-      </p>
+      <p style="text-align: center;">Ship is travelling for {{ time }} more seconds</p>
     </div>
     <div v-else>
-      <button
-        @click="() => (purchaseLocationsVisible = !purchaseLocationsVisible)"
-      >
+      <button @click="() => (purchaseLocationsVisible = !purchaseLocationsVisible)">
         {{ purchaseLocationsVisible ? "Back" : "Buy" }}
       </button>
     </div>
@@ -71,7 +67,7 @@
 
 <script lang="ts">
 import Ship from "@/interfaces/Ship";
-import { getFlightById } from "@/api";
+import { getFlightById } from "../ts/api";
 import { defineComponent, PropType } from "vue";
 import RatingBar from "./RatingBar.vue";
 import { store } from "@/store";

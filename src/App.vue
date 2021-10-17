@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { fetchUserShips } from "@/api";
+import { fetchUserShips } from "./ts/api";
 import { store } from "./store/index";
 import Banner from "./components/Banner.vue";
 import Message from "./components/Message.vue";

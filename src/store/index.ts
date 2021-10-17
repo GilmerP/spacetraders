@@ -1,5 +1,5 @@
 import { reactive } from "vue";
-import { fetchUserShips, getUser } from "@/api";
+import { fetchUserShips, getUser } from "@/ts/api";
 import user from "../interfaces/User";
 import Ship from "@/interfaces/Ship";
 

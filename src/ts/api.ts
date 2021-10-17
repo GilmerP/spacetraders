@@ -1,13 +1,13 @@
-import { store } from "./store";
+import { store } from "../store";
 
-import ApiObject from "./interfaces/ApiObject";
-import Ship from "./interfaces/Ship";
-import Good from "./interfaces/Good";
-import Order from "./interfaces/Order";
-import Loan from "./interfaces/Loan";
-import CelestialBody from "./interfaces/CelestialBody";
-import FlightPlan from "./interfaces/FlightPlan";
-import User from "./interfaces/User";
+import ApiObject from "../interfaces/ApiObject";
+import Ship from "../interfaces/Ship";
+import Good from "../interfaces/Good";
+import Order from "../interfaces/Order";
+import Loan from "../interfaces/Loan";
+import CelestialBody from "../interfaces/CelestialBody";
+import FlightPlan from "../interfaces/FlightPlan";
+import User from "../interfaces/User";
 
 const connectionString = "https://api.spacetraders.io";
 

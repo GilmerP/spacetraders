@@ -2,12 +2,7 @@
   <div class="container" v-cloak>
     <div v-if="marketplace">
       <h2>Marketplace</h2>
-      <buy-good
-        v-for="(good, index) in marketplace"
-        :key="index"
-        :good="good"
-        @buyGood="handleBuy"
-      ></buy-good>
+      <buy-good v-for="(good, index) in marketplace" :key="index" :good="good" @buyGood="handleBuy"></buy-good>
     </div>
     <div v-if="selectedShip">
       <h2>Cargo</h2>
@@ -24,7 +19,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref, watch } from "vue";
 import { store } from "../store/index";
-import { getMarketplace, sellGood, placeOrder } from "../api";
+import { getMarketplace, sellGood, placeOrder } from "../ts/api";
 import router from "../router/index";
 import Ship from "../interfaces/Ship";
 import BuyGood from "@/components/BuyGood.vue";
@@ -46,18 +41,13 @@ export default defineComponent({
 
     const marketplace = ref();
     async function setMarketplace() {
-      if (selectedShip?.value)
-        marketplace.value = await getMarketplace(selectedShip.value?.location);
+      if (selectedShip?.value) marketplace.value = await getMarketplace(selectedShip.value?.location);
     }
 
     const handleBuy = async (goodToPurchase: Order) => {
       if (selectedShip.value && goodToPurchase) {
         try {
-          await placeOrder(
-            selectedShip.value.id,
-            goodToPurchase.good,
-            goodToPurchase.quantity
-          );
+          await placeOrder(selectedShip.value.id, goodToPurchase.good, goodToPurchase.quantity);
           store.update();
         } catch (error) {
           alert(error);
@@ -68,11 +58,7 @@ export default defineComponent({
     const handleSell = async (goodToSell: Order) => {
       if (selectedShip.value && goodToSell) {
         try {
-          await sellGood(
-            selectedShip.value.id,
-            goodToSell.good,
-            goodToSell.quantity
-          );
+          await sellGood(selectedShip.value.id, goodToSell.good, goodToSell.quantity);
           store.update();
         } catch (error) {
           alert(error);

@@ -25,12 +25,6 @@ export default defineComponent({
   async beforeCreate() {
     try {
       await store.init();
-      // let timesUpdated = 1;
-      // setInterval(() => {
-      //   store.update();
-      //   console.log("update " + timesUpdated);
-      //   timesUpdated++;
-      // }, 60000);
     } catch (error) {
       console.log(error);
     }

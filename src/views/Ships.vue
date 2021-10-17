@@ -36,7 +36,7 @@ export default defineComponent({
         const fetchedData = await fetchShips();
         ships.value = fetchedData;
       } catch (error) {
-        console.log(error.message);
+        console.log((error as Error).message);
       }
     });
 

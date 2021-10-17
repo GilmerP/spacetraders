@@ -23,7 +23,6 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from "vue";
-import Common from "@/common";
 import Cargo from "@/interfaces/Cargo";
 
 export default defineComponent({
@@ -38,10 +37,7 @@ export default defineComponent({
       emit("sellGood", { good: props.good?.good, quantity: quantity.value });
     };
 
-    const icon = Common.getIconForGood(props.good.good);
-
     return {
-      icon,
       quantity,
       handleSell
     };

@@ -27,7 +27,6 @@
 
 <script lang="ts">
 import { defineComponent, ref, PropType } from "vue";
-import Common from "../common";
 import Good from "@/interfaces/Good";
 
 export default defineComponent({
@@ -43,10 +42,7 @@ export default defineComponent({
     const handleBuy = () => {
       emit("buyGood", { good: props.good.symbol, quantity: quantity.value });
     };
-
-    const icon = Common.getIconForGood(props.good.symbol);
     return {
-      icon,
       quantity,
       handleBuy
     };

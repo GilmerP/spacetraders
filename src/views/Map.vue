@@ -50,6 +50,17 @@
           d="m -3.6557208,14.182777 -0.790943,-0.817224 0.821134,-2.674261 0.821134,-2.6742618 -1.408061,-1.435289 c -0.774434,-0.78941 -1.9411739,-1.958958 -2.5927554,-2.598994 l -1.1846944,-1.163705 -2.4997564,0.76591 c -1.374864,0.421249 -2.617386,0.764601 -2.761156,0.763002 C -13.516142,4.3450082 -15,2.9425672 -15,2.6947542 c 0,-0.177702 3.978423,-7.048001 4.279386,-7.390028 0.208815,-0.237305 0.590205,-0.283268 3.7651813,-0.453754 l 3.5328309,-0.189703 1.941288,-2.1094723 c 5.015127,-5.4496249 8.283834,-7.1495569 14.4256978,-7.5022639 1.540327,-0.08846 1.628869,-0.07895 1.863773,0.199995 0.233485,0.277265 0.23866,0.394141 0.09715,2.194296 -0.472523,6.0110419 -2.640876,9.8949982 -8.2701728,14.8135562 l -1.323709,1.156581 -0.0076,0.641326 C 5.2869452,5.4699612 4.9707032,10.569874 4.8948292,10.650984 4.7053712,10.85351 -2.5214408,15 -2.6849658,15 c -0.09887,0 -0.535693,-0.367751 -0.970712,-0.817223 z m 13.40834,-21.6378039 c 0.6791928,-0.3033704 1.1218108,-0.9705846 1.1218108,-1.6910542 0,-0.503595 -0.07792,-0.7046604 -0.434053,-1.1200929 -0.391273,-0.456417 -0.5123778,-0.512377 -1.2287278,-0.567769 -0.784197,-0.06064 -0.801504,-0.05415 -1.312472,0.492081 -0.438478,0.4687379 -0.517795,0.6418169 -0.517795,1.1298711 0,0.8041095 0.285209,1.3090502 0.933017,1.651839 0.649972,0.3439326 0.867907,0.3598621 1.43822,0.105125 z"
         />
       </svg>
+
+      <line
+        class="flightLine"
+        v-for="flight in flightPlans"
+        :key="flight.id"
+        :x1="flight.x1"
+        :x2="flight.x2"
+        :y1="flight.y1"
+        :y2="flight.y2"
+        @mousemove="event => showFlightDetails(event, flight)"
+      ></line>
     </svg>
 
     <div class="location-info item-card">
@@ -68,6 +79,10 @@
         Travel
       </button>
     </div>
+    <div class="flight-info item-card">
+      <p>Flight from {{ selectedFlight.departure }} to {{ selectedFlight.destination }}</p>
+      <p>Seconds till destination: {{ selectedFlight.timeRemainingInSeconds - counter }}</p>
+    </div>
   </div>
 </template>
 
@@ -77,7 +92,8 @@ import SvgHelper from "../ts/SvgHelper";
 import { store } from "@/store/index";
 import Ship from "@/interfaces/Ship";
 import CelestialBody from "@/interfaces/CelestialBody";
-import { computed, defineComponent, onMounted, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
+import FlightPlan from "@/interfaces/FlightPlan";
 
 export default defineComponent({
   setup() {
@@ -102,9 +118,9 @@ export default defineComponent({
     /**
      * places the location info popup right next to the given coordinates
      */
-    function movePopup(x: number, y: number) {
+    function movePopup(x: number, y: number, popUp: HTMLElement) {
       const grid = document.getElementsByClassName("container")[0] as HTMLElement;
-      const locationInfo = document.getElementsByClassName("location-info")[0] as HTMLElement;
+      const locationInfo = popUp;
       locationInfo.style.left = String(x - grid.offsetLeft) + "px";
       locationInfo.style.top = String(y - grid.offsetTop) + "px";
       locationInfo.style.display = "block";
@@ -113,37 +129,10 @@ export default defineComponent({
     const selectedObject = ref({} as CelestialBody);
     const selectedShip = ref({} as Ship);
 
-    const flightPlans = computed(() => store.state.userShips.filter(x => x.flightPlanId).map(x => x.flightPlanId));
-    watch(flightPlans, () => {
-      const currentLines = document.getElementsByClassName("flightLine");
-      for (let index = 0; index < currentLines.length; index++) {
-        const element = currentLines[index];
-        element.remove();
-      }
-
-      flightPlans.value.forEach(flightId => {
-        getFlightById(flightId as string).then(flight => {
-          const departureBox = SvgHelper.getBoxFromSvg(flight.departure);
-          const destinationBox = SvgHelper.getBoxFromSvg(flight.destination);
-          const departureCenter = SvgHelper.getCenterOfBox(departureBox);
-          const destinationCenter = SvgHelper.getCenterOfBox(destinationBox);
-          const flightLine = SvgHelper.drawLine(
-            departureCenter.x,
-            departureCenter.y,
-            destinationCenter.x,
-            destinationCenter.y
-          );
-          flightLine.classList.add("flightLine");
-          document.getElementById("map")?.append(flightLine);
-        });
-      });
-    });
-
     function handleLocationSelection(location: CelestialBody, event: MouseEvent) {
-      console.log(flightPlans.value);
       selectedObject.value = location;
       showTravelLine(selectedShip.value.id, selectedObject.value.symbol);
-      movePopup(event.clientX, event.clientY);
+      movePopup(event.clientX, event.clientY, document.getElementsByClassName("location-info")[0] as HTMLElement);
     }
 
     function handleShipSelection(ship: Ship) {
@@ -156,9 +145,10 @@ export default defineComponent({
       try {
         const flightplan = await createFlightPlan(ship.id, selectedObject.value.symbol);
         alert(
-          `You are on your way to ${flightplan.destination}! \n 
+          `You are on your way to ${flightplan.destination}! \n
           Total travel duration: ${flightplan.timeRemainingInSeconds}`
         );
+        document.getElementById("travelPath")?.remove();
         store.update();
       } catch (error) {
         alert((error as Error).message);
@@ -175,35 +165,52 @@ export default defineComponent({
       loading.value = false;
     }
 
-    watch(store.state, async () => {
-      console.log("in watch");
+    // eslint-disable-next-line
+    const flightPlans = ref<Array<any>>([]);
+    const counter = ref(0);
+    onMounted(async () => {
       await getLocations();
-    });
-
-    onMounted(() => {
-      console.log(flightPlans);
-      getLocations();
       const shipsTravelling = store.state.userShips?.filter(x => x.flightPlanId);
       if (shipsTravelling.length > 0) {
-        getFlightById(shipsTravelling[0].flightPlanId as string).then(data => {
-          console.log(data);
-          const timeTotal = Math.round(
-            (new Date(data.arrivesAt).getTime() - new Date(data.createdAt).getTime()) / 1000
-          );
-          const timeRemaining = data.timeRemainingInSeconds;
-          const timePercentage = (100 / timeTotal) * timeRemaining;
+        flightPlans.value = [];
+        shipsTravelling.forEach(travellingShip => {
+          getFlightById(travellingShip.flightPlanId as string).then(flightPlan => {
+            console.log(flightPlan);
+            const departureBox = SvgHelper.getBoxFromSvg(flightPlan.departure);
+            const destinationBox = SvgHelper.getBoxFromSvg(flightPlan.destination);
+            const departureCenter = SvgHelper.getCenterOfBox(departureBox);
+            const destinationCenter = SvgHelper.getCenterOfBox(destinationBox);
+            flightPlans.value.push({
+              ...flightPlan,
+              x1: departureCenter.x,
+              y1: departureCenter.y,
+              x2: destinationCenter.x,
+              y2: destinationCenter.y
+            });
+            console.log(flightPlans);
+          });
         });
+        counter.value = 0;
+        const interval = setInterval(() => {
+          counter.value += 1;
+          if (flightPlans.value.some(flight => flight.timeRemainingInSeconds <= counter.value)) {
+            clearInterval(interval);
+            store.update();
+          }
+        }, 1000);
       }
     });
 
     function getShipLocation(ship: Ship) {
       if (ship.x && ship.y) return `${ship.x * 5 + 500} ${500 - ship.y * 5}`;
       if (!ship.flightPlanId) throw new Error("What is this bullshit");
-      return getFlightById(ship.flightPlanId).then(flightPlan => {
-        const departureBox = SvgHelper.getBoxFromSvg(flightPlan.departure);
-        const destinationBox = SvgHelper.getBoxFromSvg(flightPlan.destination);
-        return 50;
-      });
+    }
+
+    const selectedFlight = ref({});
+    function showFlightDetails(event: MouseEvent, flight: FlightPlan) {
+      console.log("mouse enter");
+      selectedFlight.value = flight;
+      movePopup(event.clientX, event.clientY, document.getElementsByClassName("flight-info")[0] as HTMLElement);
     }
 
     return {
@@ -215,7 +222,11 @@ export default defineComponent({
       selectedShip,
       loading,
       handleShipSelection,
-      getShipLocation
+      getShipLocation,
+      flightPlans,
+      showFlightDetails,
+      selectedFlight,
+      counter
     };
   }
 });
@@ -262,13 +273,24 @@ label {
 }
 .flightLine {
   stroke: red;
+  stroke-width: 3;
+}
+.flightLine:hover {
+  cursor: pointer;
 }
 .location-info {
+  display: none;
   position: absolute;
   align-items: center;
   text-align: center;
   margin: 0;
   backdrop-filter: blur(5px) brightness(0.8);
+}
+.flight-info {
+  display: none;
+  position: absolute;
+  margin: 0;
+  padding: 10px;
 }
 select,
 option {

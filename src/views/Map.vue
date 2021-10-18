@@ -43,7 +43,13 @@
         />
       </svg>
 
-      <svg v-for="ship in ships" :key="ship.id" :id="ship.id" @click="() => handleShipSelection(ship)">
+      <svg
+        v-for="ship in ships"
+        :key="ship.id"
+        :id="ship.id"
+        @click="() => handleShipSelection(ship)"
+        @dblclick="showMarketplace(ship)"
+      >
         <path
           class="ship Object"
           :transform="`translate(${getShipLocation(ship)})`"
@@ -90,6 +96,7 @@
 import { getCelestialBodys, createFlightPlan, getFlightById } from "../ts/api";
 import SvgHelper from "../ts/SvgHelper";
 import { store } from "@/store/index";
+import router from "../router/index";
 import Ship from "@/interfaces/Ship";
 import CelestialBody from "@/interfaces/CelestialBody";
 import { computed, defineComponent, onMounted, ref } from "vue";
@@ -213,6 +220,10 @@ export default defineComponent({
       movePopup(event.clientX, event.clientY, document.getElementsByClassName("flight-info")[0] as HTMLElement);
     }
 
+    function showMarketplace(ship: Ship) {
+      router.push("/trade/" + ship.id);
+    }
+
     return {
       celestialBodies,
       handleLocationSelection,
@@ -226,7 +237,8 @@ export default defineComponent({
       flightPlans,
       showFlightDetails,
       selectedFlight,
-      counter
+      counter,
+      showMarketplace
     };
   }
 });
@@ -272,8 +284,10 @@ label {
   animation: dash 20s linear infinite reverse;
 }
 .flightLine {
-  stroke: red;
+  stroke: gray;
   stroke-width: 3;
+  stroke-dasharray: 10;
+  animation: dash 40s linear infinite reverse;
 }
 .flightLine:hover {
   cursor: pointer;

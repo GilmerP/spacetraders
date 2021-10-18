@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h2 class="primary-color bar--item">SPACE TRADERS</h2>
     <h2 class="bar--item">
       {{ store.state.player.username?.toUpperCase() }}
     </h2>
@@ -32,7 +31,6 @@ div {
   display: flex;
   align-items: center;
   padding: 50px;
-  grid-column: 1/4;
 }
 
 .bar--item:not(:last-child) {

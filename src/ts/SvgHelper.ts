@@ -18,6 +18,7 @@ export default class SvgHelper {
   static getBoxFromSvg(id: string): DOMRect {
     if (!id) throw new Error("Parameter must be a non-empty string");
     const element = document.getElementById(id) as Element;
+    if (!element) throw new Error("given id is not present in dom");
     if (!(element instanceof SVGElement)) throw new Error("Element must be of type SVG");
     return (element as SVGSVGElement).getBBox();
   }

@@ -1,13 +1,14 @@
 <template>
-  <Banner />
-  <Navigation />
-  <router-view />
-  <Message />
+  <div id="board">
+    <Banner v-if="!loading" />
+    <Navigation />
+    <router-view v-if="!loading" />
+    <Message />
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { fetchUserShips } from "./ts/api";
 import { store } from "./store/index";
 import Banner from "./components/Banner.vue";
 import Message from "./components/Message.vue";
@@ -15,14 +16,12 @@ import Navigation from "./components/Navigation.vue";
 
 export default defineComponent({
   components: { Banner, Message, Navigation },
-
-  watch: {
-    async player() {
-      store.state.userShips = await fetchUserShips();
+  computed: {
+    loading() {
+      return store.state.loading;
     }
   },
-
-  async beforeCreate() {
+  async mounted() {
     try {
       await store.init();
     } catch (error) {
@@ -59,11 +58,15 @@ td {
 }
 
 #app {
-  height: 100vh;
   background-image: url("./assets/app-bg.jpg");
   background-size: cover;
   background-position: 50% 0%;
+  height: 100vh;
+}
+
+#board {
   display: grid;
+  height: 100%;
   grid-template-columns: 350px 1fr;
   grid-template-rows: 130px 1fr;
 }

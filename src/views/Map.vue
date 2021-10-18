@@ -69,23 +69,17 @@
       ></line>
     </svg>
 
-    <div class="location-info item-card">
+    <div id="location-info" class="location-info item-card">
       <div>
-        <h3>Name: {{ selectedObject.name }}</h3>
-        <h3>Type: {{ selectedObject.type }}</h3>
+        <h3>Name: {{ selectedObject?.name }}</h3>
+        <h3>Type: {{ selectedObject?.type }}</h3>
       </div>
 
-      <select v-model="selectedShip">
-        <option v-for="(ship, index) in ships" :key="index" :value="ship">{{
-          ship.location + ` (Ship ${index + 1})`
-        }}</option>
-      </select>
-
-      <button @click="e => handleTravel(selectedShip, e)">
+      <button :disabled="!(selectedShip && selectedObject)" @click="e => handleTravel(selectedShip, e)">
         Travel
       </button>
     </div>
-    <div class="flight-info item-card">
+    <div id="flight-info" class="flight-info item-card">
       <p>Flight from {{ selectedFlight.departure }} to {{ selectedFlight.destination }}</p>
       <p>Seconds till destination: {{ selectedFlight.timeRemainingInSeconds - counter }}</p>
     </div>
@@ -99,7 +93,7 @@ import { store } from "@/store/index";
 import router from "../router/index";
 import Ship from "@/interfaces/Ship";
 import CelestialBody from "@/interfaces/CelestialBody";
-import { computed, defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import FlightPlan from "@/interfaces/FlightPlan";
 
 export default defineComponent({
@@ -133,22 +127,44 @@ export default defineComponent({
       locationInfo.style.display = "block";
     }
 
-    const selectedObject = ref({} as CelestialBody);
-    const selectedShip = ref({} as Ship);
+    const selectedObject = ref<CelestialBody>();
+    const selectedShip = ref<Ship>();
+
+    function hidePopups() {
+      const flightInfo = document.getElementById("flight-info");
+      const locationInfo = document.getElementById("location-info");
+      console.log({ flightInfo, locationInfo });
+      if (flightInfo) flightInfo.style.display = "none";
+      if (locationInfo) locationInfo.style.display = "none";
+    }
 
     function handleLocationSelection(location: CelestialBody, event: MouseEvent) {
+      if (selectedObject.value?.symbol === location.symbol) {
+        selectedObject.value = undefined;
+        hidePopups();
+        document.getElementById("travelPath")?.remove();
+        return;
+      }
       selectedObject.value = location;
-      showTravelLine(selectedShip.value.id, selectedObject.value.symbol);
       movePopup(event.clientX, event.clientY, document.getElementsByClassName("location-info")[0] as HTMLElement);
+      if (!selectedShip.value) return;
+      showTravelLine(selectedShip.value.id, selectedObject.value.symbol);
     }
 
     function handleShipSelection(ship: Ship) {
+      if (selectedShip.value?.id === ship.id) {
+        selectedShip.value = undefined;
+        document.getElementById("travelPath")?.remove();
+        return;
+      }
       selectedShip.value = ship;
-      if (!selectedObject.value.symbol) return;
+      if (!selectedObject.value) return;
       showTravelLine(selectedShip.value.id, selectedObject.value.symbol);
     }
 
     async function handleTravel(ship: Ship) {
+      if (!(selectedObject.value && selectedShip.value)) return;
+      if (selectedObject.value.ships?.some(x => x.id === ship.id)) return;
       try {
         const flightplan = await createFlightPlan(ship.id, selectedObject.value.symbol);
         alert(
@@ -160,11 +176,13 @@ export default defineComponent({
       } catch (error) {
         alert((error as Error).message);
       }
+      hidePopups();
     }
 
     const loading = ref<boolean>(true);
     const celestialBodies = ref<Array<CelestialBody>>([]);
     const ships = computed(() => store.state.userShips.filter(x => x.location));
+    const shipsTravelling = computed(() => store.state.userShips.filter(x => x.flightPlanId));
     async function getLocations() {
       if (!selectedShip.value?.location) selectedShip.value = ships.value[0];
       const currentLocation = selectedShip.value?.location.split("-")[0] ?? "OE";
@@ -172,40 +190,46 @@ export default defineComponent({
       loading.value = false;
     }
 
+    let interval = -1;
+    const counter = ref(0);
     // eslint-disable-next-line
     const flightPlans = ref<Array<any>>([]);
-    const counter = ref(0);
+    watch(shipsTravelling, async () => {
+      console.log("watch: ", { shipsTravelling });
+      shipsTravelling.value.forEach(async ship => {
+        const flightPlan = await getFlightById(ship.flightPlanId as string);
+        const departureBox = SvgHelper.getBoxFromSvg(flightPlan.departure);
+        const destinationBox = SvgHelper.getBoxFromSvg(flightPlan.destination);
+        const departureCenter = SvgHelper.getCenterOfBox(departureBox);
+        const destinationCenter = SvgHelper.getCenterOfBox(destinationBox);
+        flightPlans.value.push({
+          ...flightPlan,
+          x1: departureCenter.x,
+          y1: departureCenter.y,
+          x2: destinationCenter.x,
+          y2: destinationCenter.y
+        });
+      });
+
+      if (!shipsTravelling.value.length) return;
+
+      interval = setInterval(() => {
+        console.log("tick");
+
+        if (flightPlans.value.some(flight => flight.timeRemainingInSeconds <= counter.value)) {
+          clearInterval(interval);
+          hidePopups();
+          flightPlans.value = [];
+          store.update();
+        }
+        counter.value += 1;
+      }, 1000);
+    });
+
+    onBeforeUnmount(() => clearInterval(interval));
+
     onMounted(async () => {
       await getLocations();
-      const shipsTravelling = store.state.userShips?.filter(x => x.flightPlanId);
-      if (shipsTravelling.length > 0) {
-        flightPlans.value = [];
-        shipsTravelling.forEach(travellingShip => {
-          getFlightById(travellingShip.flightPlanId as string).then(flightPlan => {
-            console.log(flightPlan);
-            const departureBox = SvgHelper.getBoxFromSvg(flightPlan.departure);
-            const destinationBox = SvgHelper.getBoxFromSvg(flightPlan.destination);
-            const departureCenter = SvgHelper.getCenterOfBox(departureBox);
-            const destinationCenter = SvgHelper.getCenterOfBox(destinationBox);
-            flightPlans.value.push({
-              ...flightPlan,
-              x1: departureCenter.x,
-              y1: departureCenter.y,
-              x2: destinationCenter.x,
-              y2: destinationCenter.y
-            });
-            console.log(flightPlans);
-          });
-        });
-        counter.value = 0;
-        const interval = setInterval(() => {
-          counter.value += 1;
-          if (flightPlans.value.some(flight => flight.timeRemainingInSeconds <= counter.value)) {
-            clearInterval(interval);
-            store.update();
-          }
-        }, 1000);
-      }
     });
 
     function getShipLocation(ship: Ship) {

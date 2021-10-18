@@ -1,8 +1,8 @@
 <template>
   <div id="board">
-    <Banner v-if="!loading" />
+    <Banner />
     <Navigation />
-    <router-view v-if="!loading" />
+    <router-view />
     <Message />
   </div>
 </template>
@@ -134,5 +134,9 @@ button,
 button:hover {
   cursor: pointer;
   background: hsl(16, 100%, 40%);
+}
+button:disabled {
+  background: #4b4b4b;
+  cursor: default;
 }
 </style>

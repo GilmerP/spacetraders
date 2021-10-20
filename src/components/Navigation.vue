@@ -5,7 +5,8 @@
         <h2 class="primary-color bar--item">SPACE TRADERS</h2>
       </li>
       <li><router-link to="/">Home</router-link></li>
-      <li><router-link to="Ships">Ships</router-link></li>
+      <li><router-link to="/Ships">Ships</router-link></li>
+      <li><router-link to="/Map">Map</router-link></li>
     </ul>
   </nav>
 </template>

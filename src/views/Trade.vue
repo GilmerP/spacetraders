@@ -2,11 +2,11 @@
   <div v-if="marketplace && selectedShip" class="container">
     <div>
       <h2>Marketplace</h2>
-      <buy-good v-for="(good, index) in marketplace" :key="index" :good="good" @buyGood="buy"></buy-good>
+      <Good :type="'buy'" v-for="(good, index) in marketplace" :key="index" :good="good" @buyGood="buy"></Good>
     </div>
     <div>
       <h2>Cargo</h2>
-      <sell-good v-for="(good, index) in sortedCargo" :key="index" :good="good" @sellGood="sell"></sell-good>
+      <Good :type="'sell'" v-for="(good, index) in sortedCargo" :key="index" :good="good" @sellGood="sell"></Good>
     </div>
   </div>
 </template>
@@ -17,8 +17,7 @@ import { store } from "../store/index";
 import { getMarketplace, sellGood, placeOrder } from "../ts/api";
 import router from "../router/index";
 import Ship from "../interfaces/Ship";
-import BuyGood from "@/components/BuyGood.vue";
-import SellGood from "@/components/SellGood.vue";
+import Good from "@/components/Good.vue";
 
 function getShipFromParamId(): Ship | undefined {
   const paramShipId = router.currentRoute.value.params.shipId;
@@ -26,7 +25,7 @@ function getShipFromParamId(): Ship | undefined {
 }
 
 export default defineComponent({
-  components: { BuyGood, SellGood },
+  components: { Good },
   methods: {
     buy: async function(goodName: string, quantity: number) {
       if (this.selectedShip && goodName && quantity) {

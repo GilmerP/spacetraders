@@ -1,6 +1,6 @@
 <template>
   <div v-if="ships" class="container">
-    <TheShip @buyShip="handleBuyShip" v-for="(ship, index) in ships" :key="index" :ship="ship" />
+    <TheShip @buyShip="handleBuyShip" v-for="ship in ships" :key="ship.id" :ship="ship" />
   </div>
   <div class="container" v-else>
     <h1>Loading...</h1>

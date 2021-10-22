@@ -131,7 +131,8 @@ button,
   min-width: 100px;
 }
 
-button:hover {
+button:hover,
+.btn:hover {
   cursor: pointer;
   background: hsl(16, 100%, 40%);
 }

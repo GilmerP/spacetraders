@@ -2,29 +2,23 @@
   <div v-if="marketplace && selectedShip" class="container">
     <div>
       <h2>Marketplace</h2>
-      <buy-good v-for="(good, index) in marketplace" :key="index" :good="good" @buyGood="handleBuy"></buy-good>
+      <buy-good v-for="(good, index) in marketplace" :key="index" :good="good" @buyGood="buy"></buy-good>
     </div>
     <div>
       <h2>Cargo</h2>
-      <sell-good
-        v-for="(good, index) in selectedShip.cargo"
-        :key="index"
-        :good="good"
-        @sellGood="handleSell"
-      ></sell-good>
+      <sell-good v-for="(good, index) in sortedCargo" :key="index" :good="good" @sellGood="sell"></sell-good>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, watch } from "vue";
+import { computed, defineComponent, onMounted, ref, watch } from "vue";
 import { store } from "../store/index";
 import { getMarketplace, sellGood, placeOrder } from "../ts/api";
 import router from "../router/index";
 import Ship from "../interfaces/Ship";
 import BuyGood from "@/components/BuyGood.vue";
 import SellGood from "@/components/SellGood.vue";
-import Order from "@/interfaces/Order";
 
 function getShipFromParamId(): Ship | undefined {
   const paramShipId = router.currentRoute.value.params.shipId;
@@ -33,45 +27,44 @@ function getShipFromParamId(): Ship | undefined {
 
 export default defineComponent({
   components: { BuyGood, SellGood },
+  methods: {
+    buy: async function(goodName: string, quantity: number) {
+      if (this.selectedShip && goodName && quantity) {
+        try {
+          await placeOrder(this.selectedShip.id, goodName, quantity);
+          store.update();
+        } catch (error) {
+          alert(error);
+        }
+      }
+    },
+    sell: async function(goodName: string, quantity: number) {
+      if (this.selectedShip && goodName && quantity) {
+        try {
+          await sellGood(this.selectedShip.id, goodName, quantity);
+          store.update();
+        } catch (error) {
+          alert(error);
+        }
+      }
+    }
+  },
   setup() {
-    const selectedShip = computed(() => {
-      return getShipFromParamId();
-    });
-
+    const selectedShip = computed(getShipFromParamId);
+    const sortedCargo = computed(() => selectedShip.value?.cargo?.sort((a, b) => (a.good < b.good ? -1 : 1)));
     const marketplace = ref();
     async function setMarketplace() {
-      if (selectedShip?.value) marketplace.value = await getMarketplace(selectedShip.value?.location);
+      if (!selectedShip?.value) return;
+      const marketData = await getMarketplace(selectedShip.value?.location);
+      marketplace.value = marketData.sort((a, b) => (a.symbol < b.symbol ? -1 : 1));
     }
-
-    const handleBuy = async (goodToPurchase: Order) => {
-      if (selectedShip.value && goodToPurchase) {
-        try {
-          await placeOrder(selectedShip.value.id, goodToPurchase.good, goodToPurchase.quantity);
-          store.update();
-        } catch (error) {
-          alert(error);
-        }
-      }
-    };
-
-    const handleSell = async (goodToSell: Order) => {
-      if (selectedShip.value && goodToSell) {
-        try {
-          await sellGood(selectedShip.value.id, goodToSell.good, goodToSell.quantity);
-          store.update();
-        } catch (error) {
-          alert(error);
-        }
-      }
-    };
 
     watch(selectedShip, async () => {
       setMarketplace();
     });
-    return { selectedShip, marketplace, setMarketplace, handleBuy, handleSell };
-  },
-  async mounted() {
-    this.setMarketplace();
+
+    onMounted(() => setMarketplace());
+    return { selectedShip, marketplace, sortedCargo };
   }
 });
 </script>

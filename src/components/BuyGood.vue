@@ -20,31 +20,31 @@
 
     <div class="purchase-container">
       <input v-model.number="quantity" type="number" step="1" />
-      <input type="button" value="Buy" @click="handleBuy" />
+      <input type="button" value="Buy" @click="buy" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, PropType } from "vue";
+import { defineComponent, PropType } from "vue";
 import Good from "@/interfaces/Good";
 
 export default defineComponent({
+  emits: ["buyGood"],
   props: {
     good: { type: Object as PropType<Good>, required: true }
   },
 
-  emits: ["buyGood"],
+  methods: {
+    buy: function() {
+      console.log("emit");
+      this.$emit("buyGood", this.$props.good.symbol, this.$data.quantity);
+    }
+  },
 
-  setup(props, { emit }) {
-    const quantity = ref(10);
-
-    const handleBuy = () => {
-      emit("buyGood", { good: props.good.symbol, quantity: quantity.value });
-    };
+  data() {
     return {
-      quantity,
-      handleBuy
+      quantity: 10
     };
   }
 });

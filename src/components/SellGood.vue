@@ -16,13 +16,13 @@
 
     <div class="purchase-container">
       <input v-model.number="quantity" type="number" step="1" />
-      <input type="button" value="Sell" @click="handleSell" />
+      <input type="button" value="Sell" @click="sell" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref } from "vue";
+import { defineComponent, PropType } from "vue";
 import Cargo from "@/interfaces/Cargo";
 
 export default defineComponent({
@@ -30,16 +30,16 @@ export default defineComponent({
   props: {
     good: { type: Object as PropType<Cargo>, required: true }
   },
-  setup(props, { emit }) {
-    const quantity = ref(props.good.quantity);
 
-    const handleSell = () => {
-      emit("sellGood", { good: props.good?.good, quantity: quantity.value });
-    };
+  methods: {
+    sell: function() {
+      this.$emit("sellGood", this.$props.good.good, this.$data.quantity);
+    }
+  },
 
+  data() {
     return {
-      quantity,
-      handleSell
+      quantity: this.$props.good.quantity
     };
   }
 });

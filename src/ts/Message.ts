@@ -8,7 +8,7 @@ export default function useError() {
     if (messageVisible.value) {
       setTimeout(() => {
         messageVisible.value = false;
-      }, 3000);
+      }, 5000);
     }
   });
   return { messageText, messageVisible };

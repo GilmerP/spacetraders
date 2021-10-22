@@ -1,11 +1,14 @@
 <template>
   <transition name="slide-fade">
-    <div v-if="messageVisible" class="error">
+    <div v-if="messageVisible" class="error item-card">
       <strong class="close-btn" @click="messageVisible = !messageVisible">
         X
       </strong>
       <div class="error-content">
-        <p>{{ messageText }}</p>
+        <p>
+          {{ messageText }} Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem
+          repellat nemo voluptates eveniet eaque itaque recusandae modi aperiam cupiditate?
+        </p>
       </div>
       <div class="loading-bar"></div>
     </div>
@@ -14,7 +17,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import useError from "@/Message";
+import useError from "@/ts/Message";
 
 export default defineComponent({
   props: [],
@@ -44,21 +47,18 @@ export default defineComponent({
   position: fixed;
   top: 10%;
   right: 10px;
-  min-width: 200px;
-  max-width: 400px;
-  background: #e40000;
+  width: clamp(200px, 500px, 500px);
+  backdrop-filter: blur(8px) brightness(0.3);
   color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  border-radius: 10px;
-  overflow: hidden;
   text-align: center;
 }
 .error strong {
   position: absolute;
-  right: 10px;
+  right: 30px;
 }
 .error strong:hover {
   cursor: pointer;
@@ -83,7 +83,7 @@ export default defineComponent({
   margin-top: auto;
   height: 5px;
   background-color: white;
-  animation: fill 3s forwards linear;
+  animation: fill 5s forwards linear;
   align-self: flex-start;
 }
 </style>

@@ -1,10 +1,10 @@
 <template>
-  <div class="container" v-cloak>
-    <div v-if="marketplace">
+  <div v-if="marketplace && selectedShip" class="container">
+    <div>
       <h2>Marketplace</h2>
       <buy-good v-for="(good, index) in marketplace" :key="index" :good="good" @buyGood="handleBuy"></buy-good>
     </div>
-    <div v-if="selectedShip">
+    <div>
       <h2>Cargo</h2>
       <sell-good
         v-for="(good, index) in selectedShip.cargo"
@@ -28,8 +28,7 @@ import Order from "@/interfaces/Order";
 
 function getShipFromParamId(): Ship | undefined {
   const paramShipId = router.currentRoute.value.params.shipId;
-  const ships = store.state.player.ships;
-  return ships?.find(x => x.id === paramShipId);
+  return store.state.userShips?.find(x => x.id === paramShipId);
 }
 
 export default defineComponent({

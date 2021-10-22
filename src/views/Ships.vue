@@ -10,7 +10,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import { fetchShips, buyShip } from "../ts/api";
-import useMessage from "../Message";
+import useMessage from "../ts/Message";
 import Ship from "../interfaces/Ship";
 import TheShip from "../components/TheShip.vue";
 

@@ -62,8 +62,8 @@ td {
 #board {
   display: grid;
   height: 100%;
-  grid-template-columns: 350px 1fr;
-  grid-template-rows: 130px 1fr;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
 }
 
 .primary-color {

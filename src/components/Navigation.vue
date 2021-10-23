@@ -7,6 +7,7 @@
       <li><router-link to="/">Home</router-link></li>
       <li><router-link to="/Ships">Ships</router-link></li>
       <li><router-link to="/Map">Map</router-link></li>
+      <li><router-link to="/Login">Logout</router-link></li>
     </ul>
   </nav>
 </template>
@@ -23,10 +24,8 @@ export default defineComponent({
 
 <style scoped>
 nav {
-  padding-top: 50px;
+  padding: 20px;
   grid-row: 1/3;
-  margin: 0 50px;
-  align-items: center;
 }
 
 nav a,
@@ -37,7 +36,18 @@ h2 {
 }
 
 ul {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   padding: 0;
   list-style-type: none;
+}
+
+li:nth-last-child(2) {
+  flex-grow: 1;
+}
+
+li:last-child a:hover {
+  color: red;
 }
 </style>

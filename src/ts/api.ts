@@ -111,6 +111,11 @@ export const takeOutLoan = async (loanType: string): Promise<void> => {
   await post(`users/${store.state.username}/loans`, JSON.stringify({ type: loanType }));
 };
 
+/**
+ * api mehtod for new user creation
+ * @param username name of the user that will be created
+ * @returns token that was created for the user
+ */
 export const createNewUser = async (username: string): Promise<string> => {
   const response = await fetch(`${connectionString}/users/${username}/token`, {
     method: "POST"

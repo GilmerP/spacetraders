@@ -4,4 +4,6 @@ export default interface Loan {
   rate: number;
   termInDays: number;
   type: string;
+  repaymentAmount?: number;
+  due?: string;
 }

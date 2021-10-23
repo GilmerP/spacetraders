@@ -17,10 +17,12 @@ import {
   faBolt,
   faTshirt,
   faHamburger,
-  faTags
+  faTags,
+  faTachometerAlt,
+  faGlobe,
+  faBomb
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import useUser from "./Auth";
 import App from "./App.vue";
 import router from "./router/index";
 
@@ -41,15 +43,18 @@ library.add(
   faBolt,
   faTshirt,
   faHamburger,
-  faTags
+  faTags,
+  faTachometerAlt,
+  faGlobe,
+  faBomb
 );
 
-router.beforeEach((to, from, next) => {
-  const { user } = useUser();
-  if (to.name !== "Login" && to.name !== "Signup" && !user.value)
-    next({ name: "Login" });
-  else next();
-});
+// router.beforeEach((to, from, next) => {
+//   const { user } = useUser();
+//   if (to.name !== "Login" && to.name !== "Signup" && !user.value)
+//     next({ name: "Login" });
+//   else next();
+// });
 
 createApp(App)
   .use(router)

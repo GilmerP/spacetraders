@@ -6,4 +6,5 @@ export default interface User {
   credits: number;
   ships: Array<Ship>;
   loans: Array<Loan>;
+  token?: string;
 }

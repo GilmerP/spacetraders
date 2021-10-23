@@ -1,38 +1,32 @@
 <template>
   <div v-if="ships" class="container">
-    <TheShip
-      @buyShip="handleBuyShip"
-      v-for="(ship, index) in ships"
-      :key="index"
-      :ship="ship"
-    />
+    <TheShip @buyShip="handleBuyShip" v-for="ship in ships" :key="ship.id" :ship="ship" />
   </div>
-  <div class="container" v-else>
-    <h1>Loading...</h1>
-  </div>
+  <div class="loader" v-else></div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-import { fetchShips, buyShip } from "../api";
-import useMessage from "../Message";
+import { fetchShips, buyShip } from "../ts/api";
+import useMessage from "../ts/Message";
 import Ship from "../interfaces/Ship";
 import TheShip from "../components/TheShip.vue";
+import { store } from "@/store";
 
 export default defineComponent({
   components: { TheShip },
   setup() {
     const ships = ref<Array<Ship>>();
 
-    const { messageText, messageVisible } = useMessage();
+    const { messageText } = useMessage();
 
-    const handleBuyShip = async (shipToBuy: Ship) => {
+    const handleBuyShip = async (location: string, type: string) => {
       try {
-        await buyShip(shipToBuy);
-        (messageText.value = "You just bought a spaceship"),
-          (messageVisible.value = true);
+        await buyShip(location, type);
+        messageText.value = "You just bought a spaceship";
+        store.update();
       } catch (error) {
-        (messageText.value = error.message), (messageVisible.value = true);
+        messageText.value = (error as Error).message;
       }
     };
 
@@ -41,7 +35,8 @@ export default defineComponent({
         const fetchedData = await fetchShips();
         ships.value = fetchedData;
       } catch (error) {
-        console.log(error.message);
+        console.log((error as Error).message);
+        messageText.value = (error as Error).message;
       }
     });
 

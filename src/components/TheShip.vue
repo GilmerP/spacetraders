@@ -1,51 +1,65 @@
 <template>
   <div class="item-card">
-    <div class="item-card_header">
-      <h2>{{ ship.manufacturer + " " + ship.class }}</h2>
-      <fa-icon class="item-card_header_icon" v-if="icon" :icon="icon" />
+    <h3 class="item-card--header">
+      {{ ship.manufacturer + " " + ship.class }}
+    </h3>
+    <div v-if="!purchaseLocationsVisible" class="ship-details">
+      <img src="../assets/Spaceship_1.png" alt="spaceship" />
+      <table class="item-card_details">
+        <tr>
+          <td>
+            <fa-icon style="color: #ff4400;" icon="tachometer-alt" />
+          </td>
+          <td class="rating-container"><rating-bar :thisVal="ship.speed" :maxVal="5" /></td>
+        </tr>
+        <tr>
+          <td>
+            <fa-icon style="color: #ff4400;" icon="bomb" />
+          </td>
+          <td class="rating-container"><rating-bar :thisVal="ship.weapons" :maxVal="20" /></td>
+        </tr>
+        <tr>
+          <td>
+            <fa-icon style="color: #ff4400;" icon="shield-alt" />
+          </td>
+          <td class="rating-container"><rating-bar :thisVal="ship.plating" :maxVal="20" /></td>
+        </tr>
+        <tr>
+          <td>
+            <fa-icon style="color: #ff4400;" icon="box-open" />
+          </td>
+          <td class="rating-container"><rating-bar :thisVal="ship.maxCargo" :maxVal="3000" /></td>
+        </tr>
+      </table>
     </div>
-    <table class="item-card_details">
+    <table class="purchaseLocations" v-else>
       <tr>
-        <td>Speed:</td>
-        <td>{{ ship.speed }}</td>
+        <th>System</th>
+        <th>Location</th>
+        <th>Price</th>
       </tr>
-      <tr>
-        <td>Weapons:</td>
-        <td>{{ ship.weapons }}</td>
-      </tr>
-      <tr>
-        <td>Plating:</td>
-        <td>{{ ship.plating }}</td>
-      </tr>
-      <tr>
-        <td>Cargo:</td>
-        <td>{{ Number(ship.maxCargo).toLocaleString() }}</td>
+      <tr
+        @click="() => buy(location.location)"
+        v-for="location in ship.purchaseLocations"
+        :key="location"
+        class="location"
+      >
+        <td>{{ location.system }}</td>
+        <td>{{ location.location }}</td>
+        <td>{{ location.price }}</td>
       </tr>
     </table>
 
-    <div
-      class="purchase-location"
-      v-for="(location, index) in ship.purchaseLocations"
-      :key="index"
-    >
-      <div class="purchase-location_details">
-        <table>
-          <tr>
-            <td>Location:</td>
-            <td>{{ location.location }}</td>
-          </tr>
-          <tr>
-            <td>Price:</td>
-            <td>{{ Number(location.price).toLocaleString() }}</td>
-          </tr>
-        </table>
-      </div>
-      <button
-        @click="
-          () => handleBuy({ location: location.location, type: ship.type })
-        "
-      >
-        Buy
+    <div v-if="ship.location" class="button-container">
+      <router-link class="btn" :to="'/trade/' + ship.id">Trade</router-link>
+      <router-link class="btn" to="/Map">Travel</router-link>
+    </div>
+    <div v-else-if="ship.id">
+      <p style="text-align: center;">Ship is travelling for {{ time }} more seconds</p>
+    </div>
+    <div v-else>
+      <button @click="() => (purchaseLocationsVisible = !purchaseLocationsVisible)">
+        {{ purchaseLocationsVisible ? "Back" : "Buy" }}
       </button>
     </div>
   </div>
@@ -53,53 +67,77 @@
 
 <script lang="ts">
 import Ship from "@/interfaces/Ship";
+import { getFlightById } from "../ts/api";
 import { defineComponent, PropType } from "vue";
+import RatingBar from "./RatingBar.vue";
+import { store } from "@/store";
 
 export default defineComponent({
-  components: {},
+  components: { RatingBar },
   emits: ["buyShip"],
   props: {
     ship: { type: Object as PropType<Ship>, required: true }
   },
-
-  setup(props, { emit }) {
-    const handleBuy = (ship: Ship) => {
-      emit("buyShip", ship);
+  data() {
+    return {
+      time: 100,
+      purchaseLocationsVisible: false
     };
+  },
+  methods: {
+    buy(location: string) {
+      this.$data.purchaseLocationsVisible = false;
+      this.$emit("buyShip", location, this.$props.ship.type);
+    }
+  },
+  async mounted() {
+    if (this.ship.flightPlanId) {
+      const flightplan = await getFlightById(this.ship.flightPlanId as string);
+      this.$data.time = flightplan.timeRemainingInSeconds;
 
-    const getIcon = (shipClass: string) => {
-      switch (shipClass) {
-        case "MK-I":
-          return "rocket";
-        case "MK-II":
-          return "space-shuttle";
-        default:
-          return "fighter-jet";
-      }
-    };
-
-    const icon = getIcon(props.ship.class);
-    return { icon, handleBuy };
+      let intId = -1;
+      intId = setInterval(() => {
+        this.$data.time--;
+        if (this.$data.time < 0) {
+          clearInterval(intId);
+          store.update();
+        }
+      }, 1000);
+    }
   }
 });
 </script>
 
-<style scoped>
-.purchase-location {
+<style>
+.ship-details {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px 0;
-  margin: 5px 0;
-  border-top: 1px solid white;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: -10px;
 }
-.purchase-location_details {
+.ship-details > * {
+  margin: 10px;
+}
+.ship-details td {
+  flex: none;
+  min-width: 30px;
+}
+img {
+  width: 200px;
+}
+.button-container {
   display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  margin-right: 20px;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
 }
-button {
-  background: green;
+.purchaseLocations tr.location {
+  padding: 5px;
+}
+.purchaseLocations tr.location:hover {
+  background-color: rgb(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+.ship-details .rating-container {
+  flex: 1;
 }
 </style>

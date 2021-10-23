@@ -1,20 +1,28 @@
 <template>
   <div>
     <h2>Loan</h2>
-    <div v-if="store.state.player.loans?.length > 0" class="item-card">
+    <div v-for="loan in store.state.player.loans" :key="loan.type" class="item-card">
       <h4 class="item-card--header">
-        {{ store.state.player.loans[0].type.toLowerCase() }}
+        {{ loan.type.toLowerCase() }}
       </h4>
-      <p>
-        This loan is due in <b>{{ time }}</b>
-      </p>
-      <p>
-        The repayment amount is
-        <b> {{ repaymentAmount }}c </b>
-      </p>
-      <button>Pay off</button>
+      <table>
+        <tr v-if="loan.status === 'CURRENT'">
+          <td>Due in:</td>
+          <td>{{ time }}</td>
+        </tr>
+        <tr>
+          <td>Repayment amount:</td>
+          <td>{{ loan.repaymentAmount }}</td>
+        </tr>
+        <tr>
+          <td>Status:</td>
+          <td>{{ loan.status }}</td>
+        </tr>
+      </table>
+
+      <button @click="() => onPayoff(loan.id)">Pay off</button>
     </div>
-    <div v-else>
+    <div v-if="!store.state.player.loans.length">
       <div class="item-card" v-for="loan in loans" :key="loan.type">
         <h3 class="item-card--header">{{ loan.type }}</h3>
         <table>
@@ -45,11 +53,10 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref } from "vue";
 import { store } from "@/store/index";
-import { getLoans, takeOutLoan } from "@/ts/api";
+import { getLoans, payoffLoan, takeOutLoan } from "@/ts/api";
+import useMessage from "../ts/Message";
 
 const now = ref(new Date().getTime());
-
-const repaymentAmount = computed(() => Number(store.state.player.loans[0].repaymentAmount).toLocaleString());
 
 const time = computed(() => {
   const then = new Date(store.state.player.loans[0].due as string).getTime();
@@ -61,6 +68,8 @@ const time = computed(() => {
   return `${days}d ${hours}h ${minutes}m ${seconds}s `;
 });
 
+const { messageText } = useMessage();
+
 export default defineComponent({
   setup() {
     async function onTakeout(type: string) {
@@ -71,12 +80,21 @@ export default defineComponent({
       }
       await store.update();
     }
+    async function onPayoff(loanId: string) {
+      console.log(loanId);
+      try {
+        await payoffLoan(loanId);
+        await store.update();
+      } catch (error) {
+        messageText.value = (error as Error).message;
+      }
+    }
     const loans = ref();
     onMounted(async () => {
       setInterval(() => (now.value = new Date().getTime()), 1000);
       loans.value = await getLoans();
     });
-    return { store, repaymentAmount, time, loans, onTakeout };
+    return { store, time, loans, onTakeout, onPayoff };
   }
 });
 </script>

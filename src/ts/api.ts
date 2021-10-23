@@ -46,6 +46,21 @@ async function post(
   return data;
 }
 
+async function put(
+  path: string,
+  args: RequestInit = {
+    method: "put",
+    headers: {
+      Authorization: `Bearer ${store.state.token}`,
+      Accept: "application/json, text/plain, */*",
+      "Content-Type": "application/json;charset=UTF-8"
+    }
+  }
+): Promise<ApiObject> {
+  const data = await request(new Request(`${connectionString}/${path}`, args));
+  return data;
+}
+
 export const getUser = async (): Promise<User> => {
   const data = await get(`users/${store.state.username}`);
   return data.user;
@@ -145,3 +160,8 @@ export const getFlightById = async (flightPlanId: string): Promise<FlightPlan> =
   const data = await get(`my/flight-plans/${flightPlanId}`);
   return data.flightPlan;
 };
+
+export async function payoffLoan(loanId: string): Promise<User> {
+  const data = await put(`my/loans/${loanId}`);
+  return data.user;
+}

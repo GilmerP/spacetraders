@@ -11,7 +11,11 @@ export const store = {
     token: ""
   }),
 
-  async init() {
+  async init(username?: string, token?: string) {
+    if (username && token) {
+      localStorage.setItem("username", username);
+      localStorage.setItem("token", token);
+    }
     this.state.username = localStorage.getItem("username") as string;
     this.state.token = localStorage.getItem("token") as string;
     await this.update();

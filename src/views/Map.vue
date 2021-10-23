@@ -1,7 +1,5 @@
 <template>
-  <div class="container" v-if="loading">
-    <h1>Loading...</h1>
-  </div>
+  <div class="loader" v-if="loading"></div>
   <div class="container" v-else>
     <svg width="1000" height="1000" id="map" version="1.1" xmlns="http://www.w3.org/2000/svg">
       <celestial-body
@@ -9,14 +7,14 @@
         :key="index"
         :id="location.symbol"
         :location="location"
-        @handleLocationSelection="(location, event) => handleLocationSelection(location, event)"
+        @click="event => selectLocation(location, event)"
       ></celestial-body>
 
       <svg
         v-for="ship in ships"
         :key="ship.id"
         :id="ship.id"
-        @click="() => handleShipSelection(ship)"
+        @click="() => selectShip(ship)"
         @dblclick="showMarketplace(ship)"
       >
         <path
@@ -44,7 +42,7 @@
         <p>Type: {{ selectedObject?.type }}</p>
       </div>
 
-      <button :disabled="!(selectedShip && selectedObject)" @click="e => handleTravel(selectedShip, e)">
+      <button :disabled="!(selectedShip && selectedObject)" @click="e => travel(selectedShip, e)">
         Travel
       </button>
     </div>
@@ -66,47 +64,47 @@ import { computed, defineComponent, onBeforeUnmount, onMounted, ref, watch } fro
 import FlightPlan from "@/interfaces/FlightPlan";
 import celestialBody from "@/components/celestialBody.vue";
 
+/**
+ * draws a line between two SVGElements
+ * @param start id of the first SVGElement
+ * @param end id of the second SVGElement
+ */
+function showTravelLine(start: string, end: string) {
+  const shipBox = SvgHelper.getBoxFromSvg(start);
+  const shipCenter = SvgHelper.getCenterOfBox(shipBox);
+  const locationBox = SvgHelper.getBoxFromSvg(end);
+  const locationCenter = SvgHelper.getCenterOfBox(locationBox);
+
+  document.getElementById("travelPath")?.remove();
+  const travelLine = SvgHelper.drawLine(shipCenter.x, shipCenter.y, locationCenter.x, locationCenter.y);
+
+  (travelLine as Element).id = "travelPath";
+  (document.getElementById("map") as HTMLElement).append(travelLine);
+}
+
+function movePopup(x: number, y: number, popUp: HTMLElement) {
+  const grid = document.getElementsByClassName("container")[0] as HTMLElement;
+  const locationInfo = popUp;
+  locationInfo.style.left = String(x - grid.offsetLeft) + "px";
+  locationInfo.style.top = String(y - grid.offsetTop) + "px";
+  locationInfo.style.display = "block";
+}
+
+function hidePopups() {
+  const flightInfo = document.getElementById("flight-info");
+  const locationInfo = document.getElementById("location-info");
+  console.log({ flightInfo, locationInfo });
+  if (flightInfo) flightInfo.style.display = "none";
+  if (locationInfo) locationInfo.style.display = "none";
+}
+
 export default defineComponent({
   components: { celestialBody },
   setup() {
-    /**
-     * draws a line between two SVGElements
-     * @param start id of the first SVGElement
-     * @param end id of the second SVGElement
-     */
-    function showTravelLine(start: string, end: string) {
-      const shipBox = SvgHelper.getBoxFromSvg(start);
-      const shipCenter = SvgHelper.getCenterOfBox(shipBox);
-      const locationBox = SvgHelper.getBoxFromSvg(end);
-      const locationCenter = SvgHelper.getCenterOfBox(locationBox);
-
-      document.getElementById("travelPath")?.remove();
-      const travelLine = SvgHelper.drawLine(shipCenter.x, shipCenter.y, locationCenter.x, locationCenter.y);
-
-      (travelLine as Element).id = "travelPath";
-      (document.getElementById("map") as HTMLElement).append(travelLine);
-    }
-
-    function movePopup(x: number, y: number, popUp: HTMLElement) {
-      const grid = document.getElementsByClassName("container")[0] as HTMLElement;
-      const locationInfo = popUp;
-      locationInfo.style.left = String(x - grid.offsetLeft) + "px";
-      locationInfo.style.top = String(y - grid.offsetTop) + "px";
-      locationInfo.style.display = "block";
-    }
-
     const selectedObject = ref<CelestialBody>();
     const selectedShip = ref<Ship>();
 
-    function hidePopups() {
-      const flightInfo = document.getElementById("flight-info");
-      const locationInfo = document.getElementById("location-info");
-      console.log({ flightInfo, locationInfo });
-      if (flightInfo) flightInfo.style.display = "none";
-      if (locationInfo) locationInfo.style.display = "none";
-    }
-
-    function handleLocationSelection(location: CelestialBody, event: MouseEvent) {
+    function selectLocation(location: CelestialBody, event: MouseEvent) {
       if (selectedObject.value?.symbol === location.symbol) {
         selectedObject.value = undefined;
         hidePopups();
@@ -119,7 +117,7 @@ export default defineComponent({
       showTravelLine(selectedShip.value.id, selectedObject.value.symbol);
     }
 
-    function handleShipSelection(ship: Ship) {
+    function selectShip(ship: Ship) {
       if (selectedShip.value?.id === ship.id) {
         selectedShip.value = undefined;
         document.getElementById("travelPath")?.remove();
@@ -130,7 +128,7 @@ export default defineComponent({
       showTravelLine(selectedShip.value.id, selectedObject.value.symbol);
     }
 
-    async function handleTravel(ship: Ship) {
+    async function travel(ship: Ship) {
       if (!(selectedObject.value && selectedShip.value)) return;
       if (selectedObject.value.ships?.some(x => x.id === ship.id)) return;
       try {
@@ -207,7 +205,6 @@ export default defineComponent({
 
     const selectedFlight = ref({});
     function showFlightDetails(event: MouseEvent, flight: FlightPlan) {
-      console.log("mouse enter");
       selectedFlight.value = flight;
       movePopup(event.clientX, event.clientY, document.getElementsByClassName("flight-info")[0] as HTMLElement);
     }
@@ -218,13 +215,13 @@ export default defineComponent({
 
     return {
       celestialBodies,
-      handleLocationSelection,
+      selectLocation,
       selectedObject,
       ships,
-      handleTravel,
+      travel,
       selectedShip,
       loading,
-      handleShipSelection,
+      selectShip,
       getShipLocation,
       flightPlans,
       showFlightDetails,

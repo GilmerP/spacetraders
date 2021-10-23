@@ -2,9 +2,7 @@
   <div v-if="ships" class="container">
     <TheShip @buyShip="handleBuyShip" v-for="ship in ships" :key="ship.id" :ship="ship" />
   </div>
-  <div class="container" v-else>
-    <h1>Loading...</h1>
-  </div>
+  <div class="loader" v-else></div>
 </template>
 
 <script lang="ts">

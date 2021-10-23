@@ -1,5 +1,5 @@
 <template>
-  <svg @click="e => select(location, e)">
+  <svg>
     <path
       v-if="location.type === 'GAS_GIANT'"
       :class="location.type + ' Object'"
@@ -35,16 +35,10 @@
 </template>
 
 <script lang="ts">
-import CelestialBody from "@/interfaces/CelestialBody";
 import { defineComponent } from "@vue/runtime-core";
 
 export default defineComponent({
-  props: ["location"],
-  methods: {
-    select(location: CelestialBody, event: MouseEvent) {
-      this.$emit("handleLocationSelection", location, event);
-    }
-  }
+  props: ["location"]
 });
 </script>
 

@@ -141,4 +141,28 @@ button:disabled {
   background: #4b4b4b;
   cursor: default;
 }
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.loader {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  backdrop-filter: brightness(0.5);
+}
+.loader::before {
+  content: "";
+  width: 10%;
+  padding: 5% 0;
+  border-radius: 50%;
+  border: rgba(255, 255, 255, 0.096) 50px solid;
+  border-top: #ff4400 50px solid;
+  animation: spinner 4s linear infinite;
+}
 </style>

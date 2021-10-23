@@ -1,11 +1,14 @@
 <template>
   <div v-if="marketplace && selectedShip" class="container">
     <div>
-      <h2>Marketplace</h2>
+      <h3>Marketplace</h3>
       <Good :type="'buy'" v-for="(good, index) in marketplace" :key="index" :good="good" @buyGood="buy"></Good>
     </div>
     <div>
-      <h2>Cargo</h2>
+      <div style="max-width: 500px" class="flex-between">
+        <h3>Cargo {{ usedCargoSpace + "/" + selectedShip.maxCargo }}</h3>
+        <h3>Loading speed: {{ selectedShip.loadingSpeed }}</h3>
+      </div>
       <Good :type="'sell'" v-for="(good, index) in sortedCargo" :key="index" :good="good" @sellGood="sell"></Good>
     </div>
   </div>
@@ -18,6 +21,9 @@ import { getMarketplace, sellGood, placeOrder } from "../ts/api";
 import router from "../router/index";
 import Ship from "../interfaces/Ship";
 import Good from "@/components/Good.vue";
+import useMessage from "../ts/Message";
+
+const { messageText } = useMessage();
 
 function getShipFromParamId(): Ship | undefined {
   const paramShipId = router.currentRoute.value.params.shipId;
@@ -33,7 +39,7 @@ export default defineComponent({
           await placeOrder(this.selectedShip.id, goodName, quantity);
           store.update();
         } catch (error) {
-          alert(error);
+          messageText.value = (error as Error).message;
         }
       }
     },
@@ -43,7 +49,7 @@ export default defineComponent({
           await sellGood(this.selectedShip.id, goodName, quantity);
           store.update();
         } catch (error) {
-          alert(error);
+          messageText.value = (error as Error).message;
         }
       }
     }
@@ -51,6 +57,13 @@ export default defineComponent({
   setup() {
     const selectedShip = computed(getShipFromParamId);
     const sortedCargo = computed(() => selectedShip.value?.cargo?.sort((a, b) => (a.good < b.good ? -1 : 1)));
+    const usedCargoSpace = computed(() => {
+      let used = 0;
+      selectedShip.value?.cargo.forEach(item => {
+        used += item.totalVolume;
+      });
+      return used;
+    });
     const marketplace = ref();
     async function setMarketplace() {
       if (!selectedShip?.value) return;
@@ -63,7 +76,7 @@ export default defineComponent({
     });
 
     onMounted(() => setMarketplace());
-    return { selectedShip, marketplace, sortedCargo };
+    return { selectedShip, marketplace, sortedCargo, usedCargoSpace };
   }
 });
 </script>

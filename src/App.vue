@@ -164,4 +164,9 @@ button:disabled {
   border-top: #ff4400 50px solid;
   animation: spinner 4s linear infinite;
 }
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+}
 </style>

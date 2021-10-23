@@ -63,6 +63,9 @@ import CelestialBody from "@/interfaces/CelestialBody";
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import FlightPlan from "@/interfaces/FlightPlan";
 import celestialBody from "@/components/celestialBody.vue";
+import useMessage from "../ts/Message";
+
+const { messageText } = useMessage();
 
 /**
  * draws a line between two SVGElements
@@ -133,14 +136,12 @@ export default defineComponent({
       if (selectedObject.value.ships?.some(x => x.id === ship.id)) return;
       try {
         const flightplan = await createFlightPlan(ship.id, selectedObject.value.symbol);
-        alert(
-          `You are on your way to ${flightplan.destination}! \n
-          Total travel duration: ${flightplan.timeRemainingInSeconds}`
-        );
+        messageText.value = `You are on your way to ${flightplan.destination}! \n
+          Total travel duration: ${flightplan.timeRemainingInSeconds}`;
         document.getElementById("travelPath")?.remove();
         store.update();
       } catch (error) {
-        alert((error as Error).message);
+        messageText.value = (error as Error).message;
       }
       hidePopups();
     }

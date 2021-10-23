@@ -7,28 +7,28 @@
       <img src="../assets/Spaceship_1.png" alt="spaceship" />
       <table class="item-card_details">
         <tr>
-          <td style="display: flex; justify-content: center;">
+          <td>
             <fa-icon style="color: #ff4400;" icon="tachometer-alt" />
           </td>
-          <td><rating-bar :thisVal="ship.speed" :maxVal="5" /></td>
+          <td class="rating-container"><rating-bar :thisVal="ship.speed" :maxVal="5" /></td>
         </tr>
         <tr>
-          <td style="display: flex; justify-content: center;">
+          <td>
             <fa-icon style="color: #ff4400;" icon="bomb" />
           </td>
-          <td><rating-bar :thisVal="ship.weapons" :maxVal="20" /></td>
+          <td class="rating-container"><rating-bar :thisVal="ship.weapons" :maxVal="20" /></td>
         </tr>
         <tr>
-          <td style="display: flex; justify-content: center;">
+          <td>
             <fa-icon style="color: #ff4400;" icon="shield-alt" />
           </td>
-          <td><rating-bar :thisVal="ship.plating" :maxVal="20" /></td>
+          <td class="rating-container"><rating-bar :thisVal="ship.plating" :maxVal="20" /></td>
         </tr>
         <tr>
-          <td style="display: flex; justify-content: center;">
+          <td>
             <fa-icon style="color: #ff4400;" icon="box-open" />
           </td>
-          <td><rating-bar :thisVal="ship.maxCargo" :maxVal="2000" /></td>
+          <td class="rating-container"><rating-bar :thisVal="ship.maxCargo" :maxVal="3000" /></td>
         </tr>
       </table>
     </div>
@@ -108,28 +108,26 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
+<style>
 .ship-details {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: -10px;
 }
-table {
-  color: white;
-  width: 100%;
+.ship-details > * {
+  margin: 10px;
 }
-tr {
-  display: flex;
-  margin-bottom: 10px;
-}
-td,
-th {
-  text-align: left;
-  flex: 1;
+.ship-details td {
+  flex: none;
+  min-width: 30px;
 }
 img {
-  width: 210px;
+  width: 200px;
 }
 .button-container {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-evenly;
 }
 .purchaseLocations tr.location {
@@ -138,5 +136,8 @@ img {
 .purchaseLocations tr.location:hover {
   background-color: rgb(0, 0, 0, 0.3);
   cursor: pointer;
+}
+.ship-details .rating-container {
+  flex: 1;
 }
 </style>

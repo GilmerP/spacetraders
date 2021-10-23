@@ -35,7 +35,48 @@
         @mousemove="event => showFlightDetails(event, flight)"
       ></line>
     </svg>
-
+    <div id="ship-infos">
+      <div
+        v-for="ship in ships.concat(shipsTravelling)"
+        :key="ship.id"
+        :id="'shipinfo-' + ship.id"
+        class="item-card"
+        @click="selectShip(ship)"
+        @dblclick="showMarketplace(ship)"
+      >
+        <h3 class="item-card--header">
+          {{ ship.manufacturer + " " + ship.class }}
+        </h3>
+        <table class="item-card_details">
+          <tr>
+            <td>Location:</td>
+            <td v-if="ship.location">{{ ship.location }}</td>
+            <td v-else>
+              <tr>
+                <td>travelling...</td>
+              </tr>
+              <tr>
+                <td>Destination:</td>
+                <td>{{ flightPlans.find(flight => flight.shipId === ship.id)?.destination }}</td>
+              </tr>
+              <tr>
+                <td>Time remaining:</td>
+                <td>{{ flightPlans.find(flight => flight.shipId === ship.id)?.timeRemainingInSeconds - counter }}</td>
+              </tr>
+            </td>
+          </tr>
+          <tr>
+            <td>Goods:</td>
+            <td>
+              <tr v-for="cargo in ship.cargo" :key="cargo.good">
+                <td>{{ capitalize(cargo.good) }}:</td>
+                <td>{{ cargo.quantity }}</td>
+              </tr>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
     <div id="location-info" class="location-info item-card">
       <div>
         <p>Name: {{ selectedObject?.name }}</p>
@@ -96,7 +137,6 @@ function movePopup(x: number, y: number, popUp: HTMLElement) {
 function hidePopups() {
   const flightInfo = document.getElementById("flight-info");
   const locationInfo = document.getElementById("location-info");
-  console.log({ flightInfo, locationInfo });
   if (flightInfo) flightInfo.style.display = "none";
   if (locationInfo) locationInfo.style.display = "none";
 }
@@ -121,19 +161,26 @@ export default defineComponent({
     }
 
     function selectShip(ship: Ship) {
+      const shipInfos = document.getElementById("ship-infos")?.getElementsByClassName("item-card");
+      if (shipInfos) {
+        for (let index = 0; index < shipInfos.length; index++) {
+          const element = shipInfos[index];
+          element.classList.remove("selected");
+        }
+      }
       if (selectedShip.value?.id === ship.id) {
         selectedShip.value = undefined;
         document.getElementById("travelPath")?.remove();
         return;
       }
       selectedShip.value = ship;
+      document.getElementById("shipinfo-" + ship.id)?.classList.add("selected");
       if (!selectedObject.value) return;
       showTravelLine(selectedShip.value.id, selectedObject.value.symbol);
     }
 
     async function travel(ship: Ship) {
       if (!(selectedObject.value && selectedShip.value)) return;
-      if (selectedObject.value.ships?.some(x => x.id === ship.id)) return;
       try {
         const flightplan = await createFlightPlan(ship.id, selectedObject.value.symbol);
         messageText.value = `You are on your way to ${flightplan.destination}! \n
@@ -149,20 +196,20 @@ export default defineComponent({
     const loading = ref<boolean>(true);
     const celestialBodies = ref<Array<CelestialBody>>([]);
     const ships = computed(() => store.state.userShips.filter(x => x.location));
-    const shipsTravelling = computed(() => store.state.userShips.filter(x => x.flightPlanId));
+    const shipsTravelling = computed(() => store.state.userShips.filter(x => !x.location));
     async function getLocations() {
-      if (!selectedShip.value?.location) selectedShip.value = ships.value[0];
       const currentLocation = selectedShip.value?.location.split("-")[0] ?? "OE";
       celestialBodies.value = await getCelestialBodys(currentLocation);
       loading.value = false;
     }
 
     let interval = -1;
+    let intervalRunning = false;
     const counter = ref(0);
     // eslint-disable-next-line
     const flightPlans = ref<Array<any>>([]);
     watch(shipsTravelling, async () => {
-      console.log("watch: ", { shipsTravelling });
+      flightPlans.value = [];
       shipsTravelling.value.forEach(async ship => {
         const flightPlan = await getFlightById(ship.flightPlanId as string);
         const departureBox = SvgHelper.getBoxFromSvg(flightPlan.departure);
@@ -177,16 +224,20 @@ export default defineComponent({
           y2: destinationCenter.y
         });
       });
+      counter.value = 0;
 
-      if (!shipsTravelling.value.length) return;
+      if (!shipsTravelling.value.length || intervalRunning) return;
 
       interval = setInterval(() => {
-        console.log("tick");
+        // console.log("tick");
+        intervalRunning = true;
 
         if (flightPlans.value.some(flight => flight.timeRemainingInSeconds <= counter.value)) {
           clearInterval(interval);
           hidePopups();
           flightPlans.value = [];
+          counter.value = 0;
+          intervalRunning = false;
           store.update();
         }
         counter.value += 1;
@@ -214,6 +265,10 @@ export default defineComponent({
       router.push("/trade/" + ship.id);
     }
 
+    function capitalize(word: string) {
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    }
+
     return {
       celestialBodies,
       selectLocation,
@@ -228,7 +283,9 @@ export default defineComponent({
       showFlightDetails,
       selectedFlight,
       counter,
-      showMarketplace
+      showMarketplace,
+      capitalize,
+      shipsTravelling
     };
   }
 });
@@ -259,7 +316,7 @@ label {
   stroke: green;
 }
 .ship {
-  fill: red;
+  fill: gray;
 }
 .Object {
   opacity: 0.9;
@@ -299,6 +356,22 @@ select,
 option {
   color: black;
   margin-left: 15px;
+}
+
+#ship-infos {
+  margin: -10px;
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
+  justify-content: center;
+}
+
+#ship-infos > * {
+  margin: 10px;
+}
+
+.item-card.selected {
+  border: #ff4400 1px solid;
 }
 
 @keyframes dash {

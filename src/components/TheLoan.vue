@@ -1,11 +1,11 @@
 <template>
-  <div>
-    <h2>Loan</h2>
+  <div class="loan">
+    <h3>Loan</h3>
     <div v-for="loan in store.state.player.loans" :key="loan.type" class="item-card">
       <h4 class="item-card--header">
         {{ loan.type.toLowerCase() }}
       </h4>
-      <table>
+      <table class="item-card_details">
         <tr v-if="loan.status === 'CURRENT'">
           <td>Due in:</td>
           <td>{{ time }}</td>
@@ -22,7 +22,7 @@
 
       <button @click="() => onPayoff(loan.id)">Pay off</button>
     </div>
-    <div v-if="!store.state.player.loans.length">
+    <div v-if="!store.state.player.loans?.length">
       <div class="item-card" v-for="loan in loans" :key="loan.type">
         <h3 class="item-card--header">{{ loan.type }}</h3>
         <table>
@@ -77,11 +77,11 @@ export default defineComponent({
         await takeOutLoan(type);
       } catch (error) {
         console.log(error);
+        messageText.value = (error as Error).message;
       }
       await store.update();
     }
     async function onPayoff(loanId: string) {
-      console.log(loanId);
       try {
         await payoffLoan(loanId);
         await store.update();
@@ -100,7 +100,7 @@ export default defineComponent({
 </script>
 
 <style>
-p {
-  margin-bottom: 10px;
+div.loan {
+  flex: 0.3 10 400px;
 }
 </style>

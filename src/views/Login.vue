@@ -29,7 +29,6 @@ export default defineComponent({
 
     async function onSubmit(event: Event) {
       event.preventDefault();
-      console.log(username.value, token.value);
       try {
         if (!isLogin.value) token.value = await createNewUser(username.value);
         await store.init(username.value, token.value);

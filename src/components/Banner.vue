@@ -27,7 +27,6 @@ import router from "@/router";
 export default defineComponent({
   setup() {
     const isLogin = computed(() => router.currentRoute.value.name?.toString().toLowerCase() === "login");
-    onMounted(() => console.log(document.location.pathname.toLowerCase()));
     return { store, isLogin };
   }
 });
@@ -37,6 +36,7 @@ export default defineComponent({
 .banner {
   width: 100%;
   display: flex;
+  flex-wrap: wrap;
   padding: 20px;
 }
 

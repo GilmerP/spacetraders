@@ -1,5 +1,6 @@
 <template>
   <svg>
+    <title>{{ location.name }} ({{ location.symbol }})</title>
     <path
       v-if="location.type === 'GAS_GIANT'"
       :class="location.type + ' Object'"

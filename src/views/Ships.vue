@@ -21,7 +21,6 @@ export default defineComponent({
     const { messageText } = useMessage();
 
     const handleBuyShip = async (location: string, type: string) => {
-      console.log({ location, type });
       try {
         await buyShip(location, type);
         messageText.value = "You just bought a spaceship";
@@ -37,6 +36,7 @@ export default defineComponent({
         ships.value = fetchedData;
       } catch (error) {
         console.log((error as Error).message);
+        messageText.value = (error as Error).message;
       }
     });
 

@@ -71,13 +71,17 @@ td {
 }
 
 .container {
-  margin: 10px;
   padding: 10px;
   position: relative;
-  display: grid;
-  grid-template: 1fr 1fr / 1fr 1fr;
-  gap: 40px;
+  display: flex;
+  flex-wrap: wrap;
   overflow: auto;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.container > * {
+  margin: 10px;
 }
 
 .flex-column {
@@ -85,12 +89,11 @@ td {
 }
 
 .item-card {
-  max-width: 500px;
   padding: 30px 20px;
-  margin-top: 20px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 10px;
   backdrop-filter: blur(5px) brightness(0.9);
+  flex: 1 1 275px;
 }
 
 .item-card--header {
@@ -99,15 +102,11 @@ td {
 }
 
 .item-card_details {
-  width: 100%;
+  flex: 1 1 100px;
 }
 
 table {
   width: 100%;
-}
-
-td {
-  width: 50%;
 }
 
 td,
@@ -116,6 +115,13 @@ table {
   border-spacing: 0px;
 }
 
+tr {
+  display: flex;
+  margin-bottom: 5px;
+}
+td {
+  flex: 1;
+}
 button,
 .btn {
   display: block;

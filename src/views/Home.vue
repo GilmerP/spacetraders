@@ -1,7 +1,6 @@
 <template>
   <div class="container">
-    <the-loan />
-    <div>
+    <div class="text-container">
       <h3>Welcome to Space Traders</h3>
       <p>
         Your Job is it to become the best trader in the universe.
@@ -19,8 +18,9 @@
         See you soon, trader!
       </p>
     </div>
-    <div v-if="store.state.userShips.length" style="grid-column: 1/3;">
-      <h2>Your Fleet</h2>
+    <the-loan />
+    <div class="ship-display-container" v-if="store.state.userShips.length">
+      <h3>Your Fleet</h3>
       <div class="ship-display">
         <TheShip v-for="(ship, index) in store.state.userShips" :key="index" :ship="ship"> </TheShip>
       </div>
@@ -45,11 +45,21 @@ export default defineComponent({
 </script>
 
 <style>
+.ship-display-container {
+  flex: 1 1 1000px;
+}
+h3 {
+  margin-bottom: 10px;
+}
 .ship-display {
   display: flex;
+  flex-wrap: wrap;
+  margin: -10px;
 }
-.ship-display > div {
-  min-width: 400px;
-  margin-right: 20px;
+.ship-display > * {
+  margin: 10px;
+}
+.text-container {
+  flex: 1 1 400px;
 }
 </style>

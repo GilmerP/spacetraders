@@ -1,11 +1,11 @@
 <template>
   <div v-if="marketplace && selectedShip" class="container">
-    <div>
+    <div class="trade-column">
       <h3>Marketplace</h3>
       <Good :type="'buy'" v-for="(good, index) in marketplace" :key="index" :good="good" @buyGood="buy"></Good>
     </div>
-    <div>
-      <div style="max-width: 500px" class="flex-between">
+    <div class="trade-column">
+      <div class="flex-between">
         <h3>Cargo {{ usedCargoSpace + "/" + selectedShip.maxCargo }}</h3>
         <h3>Loading speed: {{ selectedShip.loadingSpeed }}</h3>
       </div>
@@ -81,8 +81,17 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-.container {
-  grid-template-rows: 1fr;
+<style>
+.trade-column {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
+  align-items: flex-start;
+}
+.trade-column > *:first-child {
+  width: 100%;
+}
+.trade-column > * {
+  margin: 10px;
 }
 </style>

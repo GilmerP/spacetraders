@@ -41,7 +41,6 @@ const router: Router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  console.log({ to, from });
   const user = localStorage.getItem("username");
   const token = localStorage.getItem("token");
   if (to.name?.toString().toLowerCase() !== "login") {

@@ -5,7 +5,6 @@ import Ship from "@/interfaces/Ship";
 
 export const store = {
   state: reactive({
-    loading: true,
     player: {} as user,
     userShips: [] as Array<Ship>,
     username: "",
@@ -29,10 +28,7 @@ export const store = {
   },
 
   async update() {
-    this.state.loading = true;
     this.state.player = await getUser();
     this.state.userShips = await fetchUserShips();
-    this.state.loading = false;
-    console.log(this.state.loading);
   }
 };

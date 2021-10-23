@@ -16,11 +16,6 @@ import Navigation from "./components/Navigation.vue";
 
 export default defineComponent({
   components: { Banner, Message, Navigation },
-  computed: {
-    loading() {
-      return store.state.loading;
-    }
-  },
   async mounted() {
     try {
       await store.init();

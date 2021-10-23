@@ -40,8 +40,8 @@
 
     <div id="location-info" class="location-info item-card">
       <div>
-        <h3>Name: {{ selectedObject?.name }}</h3>
-        <h3>Type: {{ selectedObject?.type }}</h3>
+        <p>Name: {{ selectedObject?.name }}</p>
+        <p>Type: {{ selectedObject?.type }}</p>
       </div>
 
       <button :disabled="!(selectedShip && selectedObject)" @click="e => handleTravel(selectedShip, e)">
@@ -290,7 +290,6 @@ label {
   align-items: center;
   text-align: center;
   margin: 0;
-  backdrop-filter: blur(5px) brightness(0.8);
 }
 .flight-info {
   display: none;

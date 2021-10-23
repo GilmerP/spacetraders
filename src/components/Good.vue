@@ -31,8 +31,8 @@
 
     <div class="purchase-container">
       <input v-model.number="quantity" type="number" step="1" @wheel="onScroll" />
-      <button v-if="type === 'buy'" @click="buy">Buy</button>
-      <button v-else @click="sell">Sell</button>
+      <button v-if="type === 'buy'" class="btn-buy" @click="buy">Buy</button>
+      <button v-else class="btn-sell" @click="sell">Sell</button>
     </div>
   </div>
 </template>
@@ -92,9 +92,19 @@ export default defineComponent({
   padding-top: 10px;
   border-top: 1px solid white;
 }
-.purchase-container button {
+.btn-buy {
   background: green;
   margin-top: 0;
+}
+.btn-buy:hover {
+  background: hsl(120, 100%, 15%);
+}
+.btn-sell {
+  margin-top: 0;
+  background: red;
+}
+.btn-sell:hover {
+  background: hsl(0, 100%, 30%);
 }
 input {
   background: none;

@@ -95,6 +95,7 @@ td {
   margin-top: 20px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 10px;
+  backdrop-filter: blur(5px) brightness(0.9);
 }
 
 .item-card--header {

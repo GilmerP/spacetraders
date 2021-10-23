@@ -1,13 +1,12 @@
 <template>
   <transition name="slide-fade">
-    <div v-if="messageVisible" class="error item-card">
-      <strong class="close-btn" @click="messageVisible = !messageVisible">
+    <div v-if="messageText" class="error item-card">
+      <strong class="close-btn" @click="messageText = ''">
         X
       </strong>
       <div class="error-content">
         <p>
-          {{ messageText }} Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur exercitationem
-          repellat nemo voluptates eveniet eaque itaque recusandae modi aperiam cupiditate?
+          {{ messageText }}
         </p>
       </div>
       <div class="loading-bar"></div>
@@ -17,13 +16,13 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import useError from "@/ts/Message";
+import useMessage from "@/ts/Message";
 
 export default defineComponent({
   props: [],
   setup() {
-    const { messageText, messageVisible } = useError();
-    return { messageText, messageVisible };
+    const { messageText } = useMessage();
+    return { messageText };
   }
 });
 </script>

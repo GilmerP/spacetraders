@@ -17,15 +17,15 @@ export default defineComponent({
   setup() {
     const ships = ref<Array<Ship>>();
 
-    const { messageText, messageVisible } = useMessage();
+    const { messageText } = useMessage();
 
     const handleBuyShip = async (location: string, type: string) => {
       console.log({ location, type });
       try {
         await buyShip(location, type);
-        (messageText.value = "You just bought a spaceship"), (messageVisible.value = true);
+        messageText.value = "You just bought a spaceship";
       } catch (error) {
-        (messageText.value = (error as Error).message), (messageVisible.value = true);
+        messageText.value = (error as Error).message;
       }
     };
 

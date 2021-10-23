@@ -1,15 +1,14 @@
 import { ref, watch } from "vue";
 
 const messageText = ref<string>("");
-const messageVisible = ref<boolean>(false);
 
 export default function useError() {
-  watch(messageVisible, () => {
-    if (messageVisible.value) {
+  watch(messageText, () => {
+    if (messageText.value) {
       setTimeout(() => {
-        messageVisible.value = false;
+        messageText.value = "";
       }, 5000);
     }
   });
-  return { messageText, messageVisible };
+  return { messageText };
 }

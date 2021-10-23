@@ -54,12 +54,10 @@ export default defineComponent({
   },
   methods: {
     buy: function() {
-      console.log("emit");
       this.$emit("buyGood", (this.$props.good as Good).symbol, this.$data.quantity);
     },
     sell: function() {
-      console.log("emit");
-      this.$emit("sellGood", (this.$props.good as Good).symbol, this.$data.quantity);
+      this.$emit("sellGood", (this.$props.good as Cargo).good, this.$data.quantity);
     },
     onScroll: function(event: WheelEvent) {
       if (event.target !== document.activeElement) return;

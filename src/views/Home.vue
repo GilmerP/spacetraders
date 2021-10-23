@@ -19,7 +19,7 @@
         See you soon, trader!
       </p>
     </div>
-    <div style="grid-column: 1/4;">
+    <div v-if="store.state.userShips.length" style="grid-column: 1/3;">
       <h2>Your Fleet</h2>
       <div class="ship-display">
         <TheShip v-for="(ship, index) in store.state.userShips" :key="index" :ship="ship"> </TheShip>

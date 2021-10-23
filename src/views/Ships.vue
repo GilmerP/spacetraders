@@ -11,6 +11,7 @@ import { fetchShips, buyShip } from "../ts/api";
 import useMessage from "../ts/Message";
 import Ship from "../interfaces/Ship";
 import TheShip from "../components/TheShip.vue";
+import { store } from "@/store";
 
 export default defineComponent({
   components: { TheShip },
@@ -24,6 +25,7 @@ export default defineComponent({
       try {
         await buyShip(location, type);
         messageText.value = "You just bought a spaceship";
+        store.update();
       } catch (error) {
         messageText.value = (error as Error).message;
       }

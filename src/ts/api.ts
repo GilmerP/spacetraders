@@ -103,7 +103,7 @@ export const sellGood = async (shipID: string, goodToSell: string, quantityToSel
 };
 
 export const getLoans = async (): Promise<Array<Loan>> => {
-  const data = await get(`game/loans?token=${store.state.token}`);
+  const data = await get(`game/loans`);
   return data.loans;
 };
 

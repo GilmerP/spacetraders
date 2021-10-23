@@ -86,6 +86,7 @@ export default defineComponent({
   },
   methods: {
     buy(location: string) {
+      this.$data.purchaseLocationsVisible = false;
       this.$emit("buyShip", location, this.$props.ship.type);
     }
   },

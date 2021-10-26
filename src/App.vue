@@ -48,7 +48,8 @@ u,
 a,
 li,
 button,
-td {
+td,
+th {
   color: white;
 }
 
@@ -119,7 +120,8 @@ tr {
   display: flex;
   margin-bottom: 5px;
 }
-td {
+td,
+th {
   flex: 1;
 }
 button,

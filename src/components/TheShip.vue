@@ -36,7 +36,7 @@
       <tr>
         <th>System</th>
         <th>Location</th>
-        <th>Price</th>
+        <th class="price">Price</th>
       </tr>
       <tr
         @click="() => buy(location.location)"
@@ -46,7 +46,7 @@
       >
         <td>{{ location.system }}</td>
         <td>{{ location.location }}</td>
-        <td>{{ location.price }}</td>
+        <td class="price">{{ location.price?.toLocaleString() }}</td>
       </tr>
     </table>
 
@@ -132,6 +132,9 @@ img {
 }
 .purchaseLocations tr.location {
   padding: 5px;
+}
+.price {
+  text-align: right;
 }
 .purchaseLocations tr.location:hover {
   background-color: rgb(0, 0, 0, 0.3);

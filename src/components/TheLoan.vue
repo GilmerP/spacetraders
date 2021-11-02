@@ -1,6 +1,6 @@
 <template>
   <div class="loan">
-    <h3>Loan</h3>
+    <h3 class="title">Loan</h3>
     <div v-for="loan in store.state.player.loans" :key="loan.type" class="item-card">
       <h4 class="item-card--header">
         {{ loan.type.toLowerCase() }}

@@ -53,6 +53,10 @@ th {
   color: white;
 }
 
+h2 {
+  font-size: clamp(16px, 24px, 2vw);
+}
+
 #app {
   background-image: url("./assets/app-bg.jpg");
   background-size: cover;
@@ -65,6 +69,12 @@ th {
   height: 100%;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto 1fr;
+}
+
+@media only screen and (max-width: 600px) {
+  #board {
+    grid-template: 1fr / 1fr;
+  }
 }
 
 .primary-color {

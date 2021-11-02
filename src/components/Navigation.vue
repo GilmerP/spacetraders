@@ -2,7 +2,7 @@
   <nav>
     <ul>
       <li>
-        <h2 class="primary-color bar--item">SPACE TRADERS</h2>
+        <h2 class="primary-color bar--item heading">SPACE TRADERS</h2>
       </li>
       <li><router-link to="/">Home</router-link></li>
       <li><router-link to="/Ships">Ships</router-link></li>
@@ -49,5 +49,11 @@ li:nth-last-child(2) {
 
 li:last-child a:hover {
   color: red;
+}
+
+@media only screen and (max-width: 600px) {
+  nav {
+    display: none;
+  }
 }
 </style>

@@ -1,60 +1,11 @@
 import { createApp } from "vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-  faUserAstronaut,
-  faCoins,
-  faFighterJet,
-  faRocket,
-  faSpaceShuttle,
-  faSearch,
-  faWrench,
-  faBong,
-  faBurn,
-  faIndustry,
-  faBoxOpen,
-  faShieldAlt,
-  faCogs,
-  faBolt,
-  faTshirt,
-  faHamburger,
-  faTags,
-  faTachometerAlt,
-  faGlobe,
-  faBomb
-} from "@fortawesome/free-solid-svg-icons";
+import { faCoins, faRocket, faBoxOpen, faShieldAlt, faTachometerAlt, faBomb } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import App from "./App.vue";
 import router from "./router/index";
 
-library.add(
-  faUserAstronaut,
-  faCoins,
-  faFighterJet,
-  faRocket,
-  faSpaceShuttle,
-  faSearch,
-  faWrench,
-  faBong,
-  faBurn,
-  faIndustry,
-  faBoxOpen,
-  faShieldAlt,
-  faCogs,
-  faBolt,
-  faTshirt,
-  faHamburger,
-  faTags,
-  faTachometerAlt,
-  faGlobe,
-  faBomb
-);
-
-// router.beforeEach((to, from, next) => {
-//   const { user } = useUser();
-//   if (to.name !== "Login" && to.name !== "Signup" && !user.value)
-//     next({ name: "Login" });
-//   else next();
-// });
+library.add(faCoins, faRocket, faBoxOpen, faShieldAlt, faTachometerAlt, faBomb);
 
 createApp(App)
   .use(router)

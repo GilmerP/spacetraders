@@ -1,5 +1,5 @@
 <template>
-  <transition name="slide-fade">
+  <transition name="message-slide-fade">
     <div v-if="messageText" class="error item-card">
       <strong class="close-btn" @click="messageText = ''">
         X
@@ -30,13 +30,13 @@ export default defineComponent({
 <style>
 /* Enter and leave animations can use different */
 /* durations and timing functions.              */
-.slide-fade-enter-active {
-  transition: all 2s ease;
+.message-slide-fade-enter-active {
+  transition: all 0.3s ease;
 }
-.slide-fade-leave-active {
+.message-slide-fade-leave-active {
   transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
 }
-.slide-fade-enter, .slide-fade-leave-to
+.message-slide-fade-enter-from, .message-slide-fade-leave-to
 /* .slide-fade-leave-active below version 2.1.8 */ {
   transform: translateX(10px);
   opacity: 0;

@@ -73,7 +73,7 @@ h2 {
 
 @media only screen and (max-width: 600px) {
   #board {
-    grid-template: 1fr / 1fr;
+    grid-template: auto 1fr / 1fr;
   }
 }
 

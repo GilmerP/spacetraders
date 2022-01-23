@@ -100,10 +100,10 @@ import SvgHelper from "../ts/SvgHelper";
 import { store } from "@/store/index";
 import router from "../router/index";
 import Ship from "@/interfaces/Ship";
-import CelestialBody from "@/interfaces/CelestialBody";
+import CelestialBodyInterface from "@/interfaces/CelestialBody";
 import { computed, defineComponent, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import FlightPlan from "@/interfaces/FlightPlan";
-import celestialBody from "@/components/celestialBody.vue";
+import CelestialBody from "@/components/CelestialBody.vue";
 import useMessage from "../ts/Message";
 
 const { messageText } = useMessage();
@@ -142,12 +142,12 @@ function hidePopups() {
 }
 
 export default defineComponent({
-  components: { celestialBody },
+  components: { CelestialBody },
   setup() {
-    const selectedObject = ref<CelestialBody>();
+    const selectedObject = ref<CelestialBodyInterface>();
     const selectedShip = ref<Ship>();
 
-    function selectLocation(location: CelestialBody, event: MouseEvent) {
+    function selectLocation(location: CelestialBodyInterface, event: MouseEvent) {
       if (selectedObject.value?.symbol === location.symbol) {
         selectedObject.value = undefined;
         hidePopups();
@@ -194,7 +194,7 @@ export default defineComponent({
     }
 
     const loading = ref<boolean>(true);
-    const celestialBodies = ref<Array<CelestialBody>>([]);
+    const celestialBodies = ref<Array<CelestialBodyInterface>>([]);
     const ships = computed(() => store.state.userShips.filter(x => x.location));
     const shipsTravelling = computed(() => store.state.userShips.filter(x => !x.location));
     async function getLocations() {
@@ -229,7 +229,6 @@ export default defineComponent({
       if (!shipsTravelling.value.length || intervalRunning) return;
 
       interval = setInterval(() => {
-        // console.log("tick");
         intervalRunning = true;
 
         if (flightPlans.value.some(flight => flight.timeRemainingInSeconds <= counter.value)) {
@@ -251,7 +250,7 @@ export default defineComponent({
     });
 
     function getShipLocation(ship: Ship) {
-      if (ship.x && ship.y) return `${ship.x * 5 + 500} ${500 - ship.y * 5}`;
+      if (ship.x && ship.y) return `${ship.x * 4 + 500} ${500 - ship.y * 4}`;
       if (!ship.flightPlanId) throw new Error("What is this bullshit");
     }
 

@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory, Router } from "vue-router";
-import Home from "../views/Home.vue";
-import Ships from "../views/Ships.vue";
-import Trade from "../views/Trade.vue";
-import Map from "../views/Map.vue";
-import Login from "../views/Login.vue";
+import Home from "../views/HomeView.vue";
+import Ships from "../views/ShipYardView.vue";
+import Trade from "../views/MarketplaceView.vue";
+import Map from "../views/MapView.vue";
+import Login from "../views/LoginView.vue";
 import { store } from "@/store";
 
 const routes = [

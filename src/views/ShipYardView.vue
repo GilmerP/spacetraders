@@ -1,6 +1,6 @@
 <template>
   <div v-if="ships" class="container">
-    <TheShip @buyShip="handleBuyShip" v-for="ship in ships" :key="ship.id" :ship="ship" />
+    <Ship @buyShip="handleBuyShip" v-for="ship in ships" :key="ship.id" :ship="ship" />
   </div>
   <div class="loader" v-else></div>
 </template>
@@ -9,14 +9,14 @@
 import { defineComponent, onMounted, ref } from "vue";
 import { fetchShips, buyShip } from "../ts/api";
 import useMessage from "../ts/Message";
-import Ship from "../interfaces/Ship";
-import TheShip from "../components/TheShip.vue";
+import ShipInterface from "../interfaces/Ship";
+import Ship from "../components/Ship.vue";
 import { store } from "@/store";
 
 export default defineComponent({
-  components: { TheShip },
+  components: { Ship },
   setup() {
-    const ships = ref<Array<Ship>>();
+    const ships = ref<Array<ShipInterface>>();
 
     const { messageText } = useMessage();
 

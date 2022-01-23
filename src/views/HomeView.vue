@@ -31,8 +31,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { store } from "@/store/index";
-import TheLoan from "@/components/TheLoan.vue";
-import TheShip from "@/components/TheShip.vue";
+import TheLoan from "@/components/Loan.vue";
+import TheShip from "@/components/Ship.vue";
 
 export default defineComponent({
   components: { TheLoan, TheShip },

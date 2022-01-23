@@ -1,5 +1,5 @@
 # spacetraders
-This project provides a frontend for the [Space Traders API](https://spacetraders.io). A demo is running at [spacetrading.netlify.app](https://spacetrading.netlify.app). You can also run this project locally if you follow the instructions below.
+This project provides a frontend for the [Space Traders API](https://spacetraders.io). A demo is running at [spacewares.de](https://spacewares.de/). You can also run this project locally if you follow the instructions below.
 
 ## Project setup
 ```
